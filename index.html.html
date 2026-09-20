@@ -1,0 +1,1085 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>星辰暦鑑定書 — 西洋占星術・算命学・マヤ暦 統合鑑定</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;600;800&family=Noto+Serif+JP:wght@400;600&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/astronomy-engine@2.1.19/astronomy.browser.min.js"></script>
+<style>
+  :root{
+    --bg:#FDF1F6; --panel:#FFFFFF; --panel-border:#F3C7DA;
+    --accent:#DE6D96; --accent-soft:#F2A0BE; --text:#4A2A3A; --text-secondary:#9C6E85;
+    --wheel-line:#C9507C; --rule:#F3C7DA; --input-bg:#FFF9FB;
+    --fire:#E2896C; --earth:#8CAE86; --air:#E0C579; --water:#82ACC9;
+    --shadow: 0 18px 40px -20px rgba(222,109,150,0.35);
+    --good:#5FA36C; --bad:#D9587F; --neutral:#9C6E85;
+    --radius-panel:18px; --radius-card:14px; --radius-btn:28px; --radius-input:12px;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#251722; --panel:#2E1C2A; --panel-border:#4C2F44;
+      --accent:#F3A7C6; --accent-soft:#E88BAD; --text:#F7E7EF; --text-secondary:#C79BB4;
+      --wheel-line:#F3A7C6; --rule:#4C2F44; --input-bg:#20141C;
+      --fire:#E89A7C; --earth:#9DC392; --air:#E4D488; --water:#8FBEDE;
+      --shadow: 0 18px 40px -18px rgba(0,0,0,0.6);
+      --good:#8FCC9A; --bad:#F08CA3; --neutral:#C79BB4;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#251722; --panel:#2E1C2A; --panel-border:#4C2F44;
+    --accent:#F3A7C6; --accent-soft:#E88BAD; --text:#F7E7EF; --text-secondary:#C79BB4;
+    --wheel-line:#F3A7C6; --rule:#4C2F44; --input-bg:#20141C;
+    --fire:#E89A7C; --earth:#9DC392; --air:#E4D488; --water:#8FBEDE;
+    --shadow: 0 18px 40px -18px rgba(0,0,0,0.6);
+    --good:#8FCC9A; --bad:#F08CA3; --neutral:#C79BB4;
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{background:var(--bg);color:var(--text);font-family:"Noto Sans JP", sans-serif;line-height:1.85;padding:40px 18px 80px;}
+  .wrap{max-width:880px;margin:0 auto;}
+
+  .masthead{text-align:center;margin-bottom:34px;}
+  .masthead .eyebrow{font-size:13px;letter-spacing:.14em;color:var(--text-secondary);margin-bottom:10px;}
+  .masthead h1{font-family:"Shippori Mincho", serif;font-weight:800;font-size:clamp(26px,5vw,38px);margin:0 0 10px;}
+  .masthead p{color:var(--text-secondary);font-size:14.5px;max-width:560px;margin:0 auto;}
+
+  .panel{background:var(--panel);border:1px solid var(--panel-border);border-radius:var(--radius-panel);box-shadow:var(--shadow);padding:32px clamp(20px,5vw,44px);margin-bottom:28px;}
+
+  .section-title{font-family:"Shippori Mincho", serif;font-size:19px;font-weight:700;margin:0 0 22px;padding-bottom:12px;border-bottom:1px solid var(--rule);display:flex;align-items:baseline;gap:10px;}
+  .section-title .num{font-size:12px;color:var(--accent);letter-spacing:.1em;}
+  .subsection-title{font-family:"Shippori Mincho", serif;font-size:15.5px;font-weight:700;margin:26px 0 10px;color:var(--accent);}
+
+  form .field{margin-bottom:20px;}
+  form label{display:block;font-size:13.5px;color:var(--text-secondary);margin-bottom:7px;}
+  form input[type="text"], form input[type="date"], form input[type="time"], form select{
+    width:100%;padding:12px 14px;background:var(--input-bg);border:1.5px solid var(--panel-border);
+    border-radius:var(--radius-input);color:var(--text);font-family:inherit;font-size:15px;
+  }
+  form input:focus, form select:focus{outline:2px solid var(--accent-soft);outline-offset:1px;}
+  .place-row{display:flex;gap:14px;flex-wrap:wrap;}
+  .place-row .field{flex:1;min-width:160px;}
+  .checkbox-row{display:flex;align-items:center;gap:12px;margin-top:12px;font-size:14px;color:var(--text-secondary);}
+  .checkbox-row input{width:24px;height:24px;min-width:24px;accent-color:var(--accent);cursor:pointer;}
+  .checkbox-row label{cursor:pointer;}
+
+  .submit-btn{width:100%;margin-top:8px;padding:16px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius-btn);
+    font-family:"Shippori Mincho", serif;font-weight:700;font-size:16px;letter-spacing:.06em;cursor:pointer;transition:opacity .15s ease, transform .1s ease;box-shadow:0 8px 20px -8px color-mix(in srgb, var(--accent) 70%, transparent);}
+  .submit-btn:hover{opacity:.9;}
+  .submit-btn:active{transform:scale(0.98);}
+  .error-box{background:rgba(217,88,127,0.1);border:1px solid rgba(217,88,127,0.35);color:var(--bad);padding:12px 16px;border-radius:var(--radius-input);font-size:13.5px;margin-top:14px;}
+
+  #report{display:none;}
+  .report-head{text-align:center;margin-bottom:8px;}
+  .report-head .kicker{font-size:12px;letter-spacing:.16em;color:var(--text-secondary);}
+  .report-head h2{font-family:"Shippori Mincho", serif;font-size:26px;margin:8px 0 4px;}
+  .report-head .subject-name{color:var(--accent);font-weight:700;}
+  .report-head .birth-meta{font-size:13px;color:var(--text-secondary);margin-top:6px;}
+  .divider{border:none;border-top:1px solid var(--rule);margin:26px 0;}
+
+  .wheel-wrap{display:flex;justify-content:center;margin:22px 0 6px;}
+  .wheel-caption{text-align:center;font-size:12px;color:var(--text-secondary);margin-top:8px;}
+  .wheel-legend{display:flex;justify-content:center;gap:16px;flex-wrap:wrap;margin-top:10px;font-size:11.5px;color:var(--text-secondary);}
+  .wheel-legend span{display:inline-flex;align-items:center;gap:5px;}
+  .wheel-legend i{width:10px;height:10px;border-radius:50%;display:inline-block;}
+
+  .triad{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:24px;}
+  @media (max-width:620px){ .triad{grid-template-columns:1fr;} }
+  .triad .card{border:1px solid var(--panel-border);border-radius:var(--radius-card);padding:16px;text-align:center;background:color-mix(in srgb, var(--panel) 92%, var(--accent) 8%);}
+  .triad .card .glyph{font-size:24px;color:var(--accent);margin-bottom:6px;}
+  .triad .card .label{font-size:12px;color:var(--text-secondary);letter-spacing:.06em;}
+  .triad .card .value{font-family:"Shippori Mincho", serif;font-size:17px;font-weight:700;margin-top:3px;}
+  .triad .card .degree{font-size:11px;color:var(--text-secondary);margin-top:3px;}
+  .triad .card .house{font-size:11px;color:var(--accent);margin-top:2px;}
+
+  .quad{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:16px;}
+  @media (max-width:620px){ .quad{grid-template-columns:repeat(2,1fr);} }
+  .quad .card{border:1px solid var(--panel-border);border-radius:var(--radius-card);padding:12px 8px;text-align:center;background:color-mix(in srgb, var(--panel) 94%, var(--accent) 6%);}
+  .quad .card .glyph{font-size:18px;color:var(--accent);margin-bottom:4px;}
+  .quad .card .label{font-size:10.5px;color:var(--text-secondary);letter-spacing:.04em;}
+  .quad .card .value{font-family:"Shippori Mincho", serif;font-size:14px;font-weight:700;margin-top:2px;}
+
+  .reading-block{margin-top:22px;}
+  .reading-block h3{font-family:"Shippori Mincho", serif;font-size:16px;margin:0 0 8px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+  .reading-block h3 .tag{font-size:11px;color:var(--panel);background:var(--accent);padding:2px 8px;border-radius:12px;letter-spacing:.04em;}
+  .reading-block p{font-size:14.5px;color:var(--text);margin:0;}
+  .mini-lead{display:inline-block;background:var(--accent);color:#fff;font-family:"Shippori Mincho", serif;font-weight:700;font-size:13px;padding:4px 13px;border-radius:14px;margin-bottom:9px;}
+  .approx-note{font-size:12px;color:var(--text-secondary);margin-top:8px;padding:10px 12px;border-left:2px solid var(--accent-soft);background:color-mix(in srgb, var(--panel) 90%, var(--accent) 10%);}
+
+  .pillar-table{width:100%;border-collapse:separate;border-spacing:0;margin-top:6px;font-size:13.5px;border-radius:var(--radius-card);overflow:hidden;border:1px solid var(--panel-border);}
+  .pillar-table th, .pillar-table td{border-bottom:1px solid var(--panel-border);border-right:1px solid var(--panel-border);padding:9px 6px;text-align:center;}
+  .pillar-table th:last-child, .pillar-table td:last-child{border-right:none;}
+  .pillar-table th{background:color-mix(in srgb, var(--panel) 88%, var(--accent) 12%);font-weight:700;font-size:12.5px;color:var(--text-secondary);}
+  .pillar-table .ganshi{font-family:"Shippori Mincho", serif;font-size:17px;font-weight:800;color:var(--accent);}
+
+  .element-bars{margin-top:14px;}
+  .element-row{display:flex;align-items:center;gap:10px;margin-bottom:7px;font-size:12.5px;}
+  .element-row .el-label{width:26px;font-weight:700;color:var(--text-secondary);}
+  .element-row .el-track{flex:1;height:9px;background:var(--rule);border-radius:5px;overflow:hidden;}
+  .element-row .el-fill{height:100%;border-radius:5px;}
+  .element-row .el-count{width:22px;text-align:right;color:var(--text-secondary);}
+
+  .sanmei-grid{display:flex;gap:22px;flex-wrap:wrap;margin-top:6px;}
+  .sanmei-grid .kanshi-big{font-family:"Shippori Mincho", serif;font-size:30px;font-weight:800;color:var(--accent);line-height:1;}
+  .sanmei-grid .kanshi-sub{font-size:12px;color:var(--text-secondary);margin-top:6px;}
+
+  .longcount-box{font-family:"Shippori Mincho", serif;font-size:22px;font-weight:800;color:var(--accent);letter-spacing:.02em;}
+  .longcount-sub{font-size:11.5px;color:var(--text-secondary);margin-top:4px;}
+
+  .synthesis-box{background:color-mix(in srgb, var(--panel) 90%, var(--accent) 10%);border:1px solid var(--panel-border);border-radius:var(--radius-card);padding:20px 22px;margin-top:12px;}
+  .synthesis-box .lead{font-family:"Shippori Mincho", serif;font-size:17px;font-weight:700;color:var(--accent);margin:0 0 14px;line-height:1.6;}
+  .synthesis-box p{font-size:14.5px;margin:0 0 10px;}
+  .synthesis-box p:last-child{margin-bottom:0;}
+  .synthesis-box .twist{background:color-mix(in srgb, var(--panel) 85%, var(--accent) 15%);border:1.5px dashed var(--accent-soft);border-radius:var(--radius-card);padding:14px 16px;margin-top:14px;}
+  .synthesis-box .twist p{margin:0;font-weight:500;}
+
+  .actions{display:flex;gap:12px;margin-top:30px;flex-wrap:wrap;}
+  .actions button{flex:1;min-width:160px;padding:14px;border-radius:var(--radius-btn);font-size:14.5px;cursor:pointer;font-family:"Noto Sans JP", sans-serif;font-weight:500;}
+  .btn-primary{background:var(--accent);color:#fff;border:none;}
+  .btn-secondary{background:transparent;color:var(--text);border:1.5px solid var(--panel-border);}
+
+  .footer-note{text-align:center;font-size:11.5px;color:var(--text-secondary);margin-top:26px;}
+  .method-note{font-size:11.5px;color:var(--text-secondary);margin-top:18px;line-height:1.7;}
+
+  @media print{
+    body{background:#fff;color:#111;padding:0;}
+    .panel{box-shadow:none;border:none;padding:0;}
+    .masthead, .actions, form, .footer-note, #inputPanel{display:none !important;}
+    #report{display:block !important;}
+    .divider{border-top:1px solid #bbb;}
+    .triad .card, .quad .card, .synthesis-box{background:#faf8f2;border-color:#ccc;}
+    a{color:inherit;text-decoration:none;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="masthead">
+    <div class="eyebrow">✨ ASTRO · SANMEI · TZOLK'IN ✨</div>
+    <h1>星辰暦鑑定書</h1>
+    <p>生年月日・出生時刻・出生地から、西洋占星術／算命学／マヤ暦を統合し、一枚の鑑定書としてお届けします🔮</p>
+  </div>
+
+  <div class="panel" id="inputPanel">
+    <div class="section-title"><span class="num">INPUT</span>鑑定情報の入力</div>
+    <form id="birthForm">
+      <div class="field">
+        <label for="subjectName">依頼主名(任意・鑑定書に記載されます)</label>
+        <input type="text" id="subjectName" placeholder="例)山田 花子">
+      </div>
+      <div class="field">
+        <label for="birthDate">生年月日</label>
+        <input type="date" id="birthDate" required>
+      </div>
+      <div class="place-row">
+        <div class="field">
+          <label for="birthTime">出生時刻</label>
+          <input type="time" id="birthTime">
+        </div>
+      </div>
+      <div class="checkbox-row">
+        <input type="checkbox" id="timeUnknown">
+        <label for="timeUnknown" style="margin:0;">出生時刻が分からない(正午と仮定した概算で算出します/上昇星座・ハウスは算出しません)</label>
+      </div>
+      <div class="field" style="margin-top:20px;">
+        <label for="birthPref">出生都道府県</label>
+        <select id="birthPref" required></select>
+      </div>
+      <button type="submit" class="submit-btn">鑑定書を作成する</button>
+      <div class="error-box" id="errorBox" style="display:none;"></div>
+    </form>
+  </div>
+
+  <div class="panel" id="report">
+    <div class="report-head">
+      <div class="kicker">DIVINATION CERTIFICATE</div>
+      <h2><span class="subject-name" id="outName"></span> 様 鑑定書</h2>
+      <div class="birth-meta" id="outMeta"></div>
+    </div>
+
+    <div class="wheel-wrap"><div id="wheelHolder"></div></div>
+    <div class="wheel-legend">
+      <span><i style="background:var(--fire);"></i>火(牡羊・獅子・射手)</span>
+      <span><i style="background:var(--earth);"></i>地(牡牛・乙女・山羊)</span>
+      <span><i style="background:var(--air);"></i>風(双子・天秤・水瓶)</span>
+      <span><i style="background:var(--water);"></i>水(蟹・蠍・魚)</span>
+    </div>
+    <div class="wheel-caption" id="wheelCaption">ホロスコープ略図(ASCを左(9時方向)に据えた簡易ホイール)</div>
+
+    <div class="triad">
+      <div class="card">
+        <div class="glyph">☉</div>
+        <div class="label">太陽星座</div>
+        <div class="value" id="sunSignVal"></div>
+        <div class="degree" id="sunDegVal"></div>
+        <div class="house" id="sunHouseVal"></div>
+      </div>
+      <div class="card">
+        <div class="glyph">☽</div>
+        <div class="label">月星座</div>
+        <div class="value" id="moonSignVal"></div>
+        <div class="degree" id="moonDegVal"></div>
+        <div class="house" id="moonHouseVal"></div>
+      </div>
+      <div class="card">
+        <div class="glyph">ASC</div>
+        <div class="label">上昇星座</div>
+        <div class="value" id="ascSignVal"></div>
+        <div class="degree" id="ascDegVal"></div>
+      </div>
+    </div>
+
+    <div class="quad" id="quadRow">
+      <div class="card"><div class="glyph">☿</div><div class="label">水星</div><div class="value" id="mercurySignVal"></div></div>
+      <div class="card"><div class="glyph">♀</div><div class="label">金星</div><div class="value" id="venusSignVal"></div></div>
+      <div class="card"><div class="glyph">♂</div><div class="label">火星</div><div class="value" id="marsSignVal"></div></div>
+      <div class="card"><div class="glyph">☾</div><div class="label">月相</div><div class="value" id="moonPhaseVal"></div></div>
+    </div>
+
+    <hr class="divider">
+    <div class="section-title"><span class="num">01</span>🔮 西洋占星術</div>
+    <div class="reading-block">
+      <h3>太陽星座 — <span id="sunSignName2"></span><span class="tag">基本性格・生命力</span></h3>
+      <p id="sunText"></p>
+    </div>
+    <div class="reading-block">
+      <h3>月星座 — <span id="moonSignName2"></span><span class="tag">感情・内面</span></h3>
+      <p id="moonText"></p>
+      <div class="approx-note" id="moonApproxNote" style="display:none;"></div>
+    </div>
+    <div class="reading-block" id="ascBlock">
+      <h3>上昇星座 — <span id="ascSignName2"></span><span class="tag">第一印象・人生への構え</span></h3>
+      <p id="ascText"></p>
+    </div>
+    <div class="approx-note" id="ascUnknownNote" style="display:none;">出生時刻が不明のため、上昇星座・ハウスは算出しておりません。正確な鑑定には出生時刻の情報が必要です。</div>
+    <div class="reading-block">
+      <h3>太陽×月 アスペクト<span class="tag">意識と感情の関係性</span></h3>
+      <p id="aspectText"></p>
+    </div>
+    <div class="reading-block" id="mercuryBlock">
+      <h3>水星 — <span id="mercurySignName2"></span><span class="tag">思考・コミュニケーション</span></h3>
+      <p id="mercuryText"></p>
+    </div>
+    <div class="reading-block" id="venusBlock">
+      <h3>金星 — <span id="venusSignName2"></span><span class="tag">愛情・美意識</span></h3>
+      <p id="venusText"></p>
+    </div>
+    <div class="reading-block" id="marsBlock">
+      <h3>火星 — <span id="marsSignName2"></span><span class="tag">行動力・闘争心</span></h3>
+      <p id="marsText"></p>
+    </div>
+    <div class="reading-block">
+      <h3>月相 — <span id="moonPhaseName2"></span><span class="tag">生まれた瞬間のエネルギーの流れ</span></h3>
+      <p id="moonPhaseText"></p>
+    </div>
+    <div class="approx-note" id="planetsUnavailNote" style="display:none;">天体計算ライブラリが読み込めなかったため、水星・金星・火星は今回表示できませんでした。通信環境を確認のうえ再度お試しください。</div>
+    <div class="method-note">太陽・月・上昇星座・水星・金星・火星はすべてastronomy-engine(VSOP87/NOVASベース、精度目安±1分角)による黄経の実測計算に基づきます。度数は黄経を星座内(0〜30度)に換算した値です。</div>
+
+    <hr class="divider">
+    <div class="section-title"><span class="num">02</span>🎴 算命学(四柱式)</div>
+    <table class="pillar-table">
+      <tr><th></th><th>年柱</th><th>月柱</th><th>日柱</th></tr>
+      <tr><td>干支</td><td class="ganshi" id="yearGanshi"></td><td class="ganshi" id="monthGanshi"></td><td class="ganshi" id="dayGanshi"></td></tr>
+    </table>
+    <div class="subsection-title">十大主星(日干×月支の関係)</div>
+    <div class="sanmei-grid">
+      <div><div class="kanshi-big" id="jusseiVal" style="font-size:24px;"></div><div class="kanshi-sub">十大主星</div></div>
+    </div>
+    <div class="reading-block">
+      <h3><span id="jusseiName2"></span><span class="tag">生まれ持った性質</span></h3>
+      <p id="jusseiText"></p>
+    </div>
+    <div class="subsection-title">十二大従星(日干×年支の関係)</div>
+    <div class="sanmei-grid">
+      <div><div class="kanshi-big" id="stageVal" style="font-size:24px;"></div><div class="kanshi-sub">十二大従星</div></div>
+    </div>
+    <div class="reading-block">
+      <h3><span id="stageName2"></span><span class="tag">運気の質・エネルギーの状態</span></h3>
+      <p id="stageText"></p>
+    </div>
+    <div class="subsection-title">五行バランス</div>
+    <div class="element-bars" id="elementBars"></div>
+    <p id="elementText" style="font-size:13.5px;margin-top:10px;"></p>
+    <div class="method-note" id="sanmeiMethodNote"></div>
+
+    <hr class="divider">
+    <div class="section-title"><span class="num">03</span>☀️ マヤ暦</div>
+    <div class="subsection-title">ロングカウント / ツォルキン / ハアブ</div>
+    <div class="longcount-box" id="longCountVal"></div>
+    <div class="longcount-sub" id="longCountSub"></div>
+    <table class="pillar-table" style="margin-top:14px;">
+      <tr><th>ツォルキン(260日暦)</th><th>ハアブ(365日暦)</th></tr>
+      <tr><td class="ganshi" id="tzolkinVal"></td><td class="ganshi" id="haabVal"></td></tr>
+    </table>
+    <div class="reading-block">
+      <h3>太陽の紋章 — <span id="mayaName2"></span><span class="tag" id="mayaKinTag"></span></h3>
+      <p id="mayaText"></p>
+    </div>
+    <div class="reading-block">
+      <h3>銀河の音 — <span id="toneName2"></span><span class="tag">運ぶ力の性質</span></h3>
+      <p id="toneText"></p>
+    </div>
+    <div class="method-note">
+      グレゴリオ暦→ユリウス通日→GMT(グッドマン・マルティネス・トンプソン)相関定数 584283 を用いて算出しています。これは現在最も広く採用されている相関定数ですが、マヤ暦研究には他の相関定数説も存在します。
+    </div>
+
+    <hr class="divider">
+    <div class="section-title"><span class="num">04</span>✨ 総合鑑定</div>
+    <div class="synthesis-box" id="synthesisBox"></div>
+
+    <div class="footer-note">本鑑定書は娯楽・自己理解の参考としてお楽しみください。</div>
+  </div>
+
+  <div class="actions" id="actionRow" style="display:none;">
+    <button class="btn-primary" id="printBtn">この鑑定書を印刷 / PDF保存</button>
+    <button class="btn-secondary" id="editBtn">入力をやり直す</button>
+  </div>
+
+  <div class="footer-note">© 星辰暦鑑定書</div>
+</div>
+
+<script>
+(function(){
+
+// ============ 都道府県データ(47都道府県・県庁所在地の緯度経度、JST+9固定) ============
+const PREFS = [
+  {name:"北海道(札幌)", lat:43.0642, lon:141.3469},
+  {name:"青森県(青森)", lat:40.8244, lon:140.7400},
+  {name:"岩手県(盛岡)", lat:39.7036, lon:141.1527},
+  {name:"宮城県(仙台)", lat:38.2682, lon:140.8694},
+  {name:"秋田県(秋田)", lat:39.7186, lon:140.1024},
+  {name:"山形県(山形)", lat:38.2404, lon:140.3633},
+  {name:"福島県(福島)", lat:37.7500, lon:140.4678},
+  {name:"茨城県(水戸)", lat:36.3418, lon:140.4468},
+  {name:"栃木県(宇都宮)", lat:36.5658, lon:139.8836},
+  {name:"群馬県(前橋)", lat:36.3912, lon:139.0608},
+  {name:"埼玉県(さいたま)", lat:35.8617, lon:139.6455},
+  {name:"千葉県(千葉)", lat:35.6074, lon:140.1065},
+  {name:"東京都(東京)", lat:35.6895, lon:139.6917},
+  {name:"神奈川県(横浜)", lat:35.4437, lon:139.6380},
+  {name:"新潟県(新潟)", lat:37.9161, lon:139.0364},
+  {name:"富山県(富山)", lat:36.6953, lon:137.2113},
+  {name:"石川県(金沢)", lat:36.5613, lon:136.6562},
+  {name:"福井県(福井)", lat:36.0652, lon:136.2216},
+  {name:"山梨県(甲府)", lat:35.6642, lon:138.5684},
+  {name:"長野県(長野)", lat:36.6513, lon:138.1810},
+  {name:"岐阜県(岐阜)", lat:35.3912, lon:136.7223},
+  {name:"静岡県(静岡)", lat:34.9756, lon:138.3828},
+  {name:"愛知県(名古屋)", lat:35.1815, lon:136.9066},
+  {name:"三重県(津)", lat:34.7185, lon:136.5056},
+  {name:"滋賀県(大津)", lat:35.0045, lon:135.8686},
+  {name:"京都府(京都)", lat:35.0116, lon:135.7681},
+  {name:"大阪府(大阪)", lat:34.6937, lon:135.5023},
+  {name:"兵庫県(神戸)", lat:34.6901, lon:135.1955},
+  {name:"奈良県(奈良)", lat:34.6851, lon:135.8048},
+  {name:"和歌山県(和歌山)", lat:34.2261, lon:135.1675},
+  {name:"鳥取県(鳥取)", lat:35.5039, lon:134.2381},
+  {name:"島根県(松江)", lat:35.4723, lon:133.0505},
+  {name:"岡山県(岡山)", lat:34.6618, lon:133.9344},
+  {name:"広島県(広島)", lat:34.3853, lon:132.4553},
+  {name:"山口県(山口)", lat:34.1859, lon:131.4714},
+  {name:"徳島県(徳島)", lat:34.0658, lon:134.5593},
+  {name:"香川県(高松)", lat:34.3401, lon:134.0434},
+  {name:"愛媛県(松山)", lat:33.8392, lon:132.7657},
+  {name:"高知県(高知)", lat:33.5597, lon:133.5311},
+  {name:"福岡県(福岡)", lat:33.5904, lon:130.4017},
+  {name:"佐賀県(佐賀)", lat:33.2494, lon:130.2988},
+  {name:"長崎県(長崎)", lat:32.7503, lon:129.8779},
+  {name:"熊本県(熊本)", lat:32.7898, lon:130.7417},
+  {name:"大分県(大分)", lat:33.2382, lon:131.6126},
+  {name:"宮崎県(宮崎)", lat:31.9111, lon:131.4239},
+  {name:"鹿児島県(鹿児島)", lat:31.5966, lon:130.5571},
+  {name:"沖縄県(那覇)", lat:26.2124, lon:127.6809}
+];
+const prefSel = document.getElementById("birthPref");
+PREFS.forEach((c,i)=>{
+  const opt = document.createElement("option");
+  opt.value = i; opt.textContent = c.name;
+  if(i===12) opt.selected = true;
+  prefSel.appendChild(opt);
+});
+
+// ============ 西洋占星術データ ============
+const ZODIAC = ["牡羊座","牡牛座","双子座","蟹座","獅子座","乙女座","天秤座","蠍座","射手座","山羊座","水瓶座","魚座"];
+const ZODIAC_SYMBOL = ["♈","♉","♊","♋","♌","♍","♎","♏","♐","♑","♒","♓"].map(s=>s+"\uFE0E"); // 末尾のU+FE0Eはテキスト表示指定(カラー絵文字化を防ぐ)
+const ELEMENT_OF_SIGN = ["fire","earth","air","water","fire","earth","air","water","fire","earth","air","water"];
+const HOUSE_MEANINGS = ["自分自身・第一印象","所有・価値観・才能","学び・言葉・身近な人間関係","家庭・心の基盤","創造・恋愛・自己表現","仕事・健康・日常の積み重ね","パートナーシップ・対人関係","継承・深い結びつき・変容","探求・遠方・学問と思想","社会的地位・使命・キャリア","仲間・未来への希望・理想","内面・潜在意識・手放し"];
+
+const SUN_TEXT = {
+  "牡羊座":"太陽が牡羊座にある方は、物事の第一歩を踏み出す情熱と瞬発力に恵まれています。直感を信じて動き出す姿は周囲に活力を与え、困難な状況ほど本領を発揮する開拓者の気質を持っています。",
+  "牡牛座":"太陽が牡牛座にある方は、じっくりと物事を積み上げていく安定志向と五感の豊かさが持ち味です。一度決めた道を粘り強く歩み続ける姿勢が、周囲からの信頼につながります。",
+  "双子座":"太陽が双子座にある方は、知的好奇心が旺盛で、話題の引き出しの多さが魅力です。状況に応じて柔軟に立ち回る機転の良さがあり、情報や人をつなぐ役割で力を発揮します。",
+  "蟹座":"太陽が蟹座にある方は、情に厚く、身近な人を守り育む温かさを持っています。感受性の豊かさから相手の気持ちを察する力に優れ、家庭的な安心感を与える存在です。",
+  "獅子座":"太陽が獅子座にある方は、堂々とした存在感と表現力で周囲を惹きつけます。自分の信じる道を誇りを持って進む姿勢があり、人を励まし場を明るくする太陽のような力を持っています。",
+  "乙女座":"太陽が乙女座にある方は、細部まで気を配る観察力と誠実な仕事ぶりが持ち味です。物事を分析し改善していく姿勢があり、周囲を陰で支える縁の下の力持ちとして頼られます。",
+  "天秤座":"太陽が天秤座にある方は、調和とバランス感覚に優れ、美しいものや公平な関係を大切にします。対立を和らげ、人と人との橋渡しをする社交的な魅力を持っています。",
+  "蠍座":"太陽が蠍座にある方は、物事の本質を見抜く探求心と、一度心を決めたら揺るがない集中力を持っています。表面的な付き合いより深い信頼関係を重んじる、情熱を内に秘めたタイプです。",
+  "射手座":"太陽が射手座にある方は、自由を愛し、新しい世界へ飛び出していく冒険心にあふれています。楽観的な視野の広さがあり、経験を通じて自分を成長させていく旅人の気質を持っています。",
+  "山羊座":"太陽が山羊座にある方は、着実に目標へ向かって努力を積み重ねる責任感と忍耐力の持ち主です。長期的な視点で物事を捉え、周囲から頼りにされる堅実なリーダーシップを発揮します。",
+  "水瓶座":"太陽が水瓶座にある方は、独創的な発想と自由な精神で、常識にとらわれない視点を持っています。個性を大切にしながらも、より良い社会や未来を思い描く博愛の心があります。",
+  "魚座":"太陽が魚座にある方は、豊かな想像力と共感力で、目に見えないものを感じ取る繊細さを持っています。人の痛みに寄り添う優しさがあり、芸術的な感性にも恵まれています。"
+};
+const MOON_TEXT = {
+  "牡羊座":"月が牡羊座にある方は、感情の動きが素早く、思ったことをまっすぐ表現します。心が動いた瞬間に行動へ移す勢いがあり、感情に正直であることが安心につながります。",
+  "牡牛座":"月が牡牛座にある方は、穏やかで変化の少ない環境に安心を感じます。心地よい感覚や慣れ親しんだものに囲まれているとき、内面が最も安定します。",
+  "双子座":"月が双子座にある方は、会話や情報のやり取りを通じて心が満たされます。気持ちを言葉にして誰かと共有することで、感情の整理がしやすくなるタイプです。",
+  "蟹座":"月が蟹座にある方は、家族や親しい人との情緒的なつながりを何より大切にします。共感力が高く、身近な人の感情の変化に敏感に反応する繊細な内面を持っています。",
+  "獅子座":"月が獅子座にある方は、認められること、表現することで心が満たされます。感情表現が豊かで、自分らしくいられる場では安心感と自信を持って過ごせます。",
+  "乙女座":"月が乙女座にある方は、物事を整理し役に立つことで心が落ち着きます。感情を分析的に捉える傾向があり、丁寧な生活習慣が精神的な安定を支えます。",
+  "天秤座":"月が天秤座にある方は、周囲との調和が取れているときに心が安らぎます。一人でいるより、信頼できる相手との穏やかな関係の中で安心感を得るタイプです。",
+  "蠍座":"月が蠍座にある方は、感情の起伏が深く、簡単には表に出しません。心を許した相手には強い絆を築き、深いレベルでのつながりを求める内面を持っています。",
+  "射手座":"月が射手座にある方は、自由に動ける状況で心が満たされます。新しい経験や広い視野を得ることが、感情的な充足感につながるタイプです。",
+  "山羊座":"月が山羊座にある方は、感情を抑えて冷静に対応する傾向があります。責任を果たし、物事を着実に進めていること自体が、内面の安心感の土台となります。",
+  "水瓶座":"月が水瓶座にある方は、感情を一歩引いた視点で捉えることが得意です。自分らしい距離感を保ちながら、仲間とゆるやかにつながることに心地よさを感じます。",
+  "魚座":"月が魚座にある方は、感受性が非常に豊かで、周囲の空気を敏感に感じ取ります。想像の世界に心を委ねる時間が、感情を癒やし満たしてくれます。"
+};
+const ASC_TEXT = {
+  "牡羊座":"上昇星座が牡羊座の方は、第一印象として行動力とエネルギッシュな存在感を与えます。物事に対して積極的に向き合う姿勢が、人生全体のスタンスとして表れます。",
+  "牡牛座":"上昇星座が牡牛座の方は、落ち着きと安定感のある第一印象を与えます。マイペースを保ちながら着実に歩みを進める姿勢が、人生への向き合い方の基本になります。",
+  "双子座":"上昇星座が双子座の方は、軽やかで話しやすい第一印象を持たれます。好奇心を持って様々なことに触れながら人生を歩んでいくスタイルです。",
+  "蟹座":"上昇星座が蟹座の方は、親しみやすく世話好きな第一印象を与えます。身近な人との関係を大切にしながら、安心できる居場所を築いていく人生観を持っています。",
+  "獅子座":"上昇星座が獅子座の方は、華やかで堂々とした第一印象を与えます。人生において自分らしい表現の場を求め、主役として輝こうとする姿勢が表れます。",
+  "乙女座":"上昇星座が乙女座の方は、丁寧で誠実な第一印象を持たれます。物事を細やかに整えながら、着実に人生を積み上げていくスタイルです。",
+  "天秤座":"上昇星座が天秤座の方は、洗練された、感じの良い第一印象を与えます。人との関係性を大切にし、バランスの取れた人生を築こうとする姿勢があります。",
+  "蠍座":"上昇星座が蠍座の方は、静かながらも強い意志を感じさせる第一印象を与えます。物事に深く関わり、本質を見極めながら人生を進めていくタイプです。",
+  "射手座":"上昇星座が射手座の方は、明るく開放的な第一印象を与えます。新しい世界や経験を求めて、自由に人生を切り開いていく姿勢が表れます。",
+  "山羊座":"上昇星座が山羊座の方は、落ち着きと責任感を感じさせる第一印象を与えます。目標に向かって着実に歩みを重ねていく、堅実な人生観の持ち主です。",
+  "水瓶座":"上昇星座が水瓶座の方は、個性的でクールな第一印象を持たれます。周囲に流されず、自分なりの価値観で人生を切り開いていくスタイルです。",
+  "魚座":"上昇星座が魚座の方は、柔らかく優しい第一印象を与えます。感受性を大切にしながら、流れに身を委ねるようにしなやかに人生を歩んでいきます。"
+};
+const SUN_KEYWORD = {"牡羊座":"開拓者のような行動力","牡牛座":"揺るがない安定感","双子座":"軽やかな知的好奇心","蟹座":"深い情愛としての優しさ","獅子座":"堂々とした表現力","乙女座":"誠実な分析力","天秤座":"洗練された調和感覚","蠍座":"揺るがない探求心","射手座":"自由を愛する冒険心","山羊座":"着実な責任感","水瓶座":"独創的な発想力","魚座":"豊かな共感力"};
+const MOON_KEYWORD = {"牡羊座":"感情を素直に表す率直さ","牡牛座":"変わらぬ安心を求める心","双子座":"言葉で心を整理する性質","蟹座":"身近な人を思う情の深さ","獅子座":"認められたい表現欲","乙女座":"整えることで安らぐ心","天秤座":"調和の中で満たされる心","蠍座":"内に秘めた感情の深さ","射手座":"自由を求める心","山羊座":"感情を律する冷静さ","水瓶座":"距離を保つ独立心","魚座":"繊細で揺れやすい感受性"};
+const ASC_KEYWORD = {"牡羊座":"エネルギッシュな第一印象","牡牛座":"落ち着いた第一印象","双子座":"話しやすい軽やかな印象","蟹座":"親しみやすい世話好きな印象","獅子座":"華やかで堂々とした印象","乙女座":"丁寧で誠実な印象","天秤座":"洗練された感じの良さ","蠍座":"静かで芯の強い印象","射手座":"明るく開放的な印象","山羊座":"落ち着いた責任感のある印象","水瓶座":"個性的でクールな印象","魚座":"柔らかく優しい印象"};
+
+const SUN_SIMPLE = {"牡羊座":"行動派","牡牛座":"じっくり型","双子座":"好奇心旺盛","蟹座":"優しい世話焼き","獅子座":"目立ちたがり屋","乙女座":"几帳面さん","天秤座":"バランス上手","蠍座":"一途で情熱的","射手座":"自由人","山羊座":"努力家","水瓶座":"個性派","魚座":"やさしい夢見がち"};
+const MOON_SIMPLE = {"牡羊座":"素直で負けず嫌い","牡牛座":"マイペースで安心したい","双子座":"おしゃべりで気分屋","蟹座":"甘えん坊で家族思い","獅子座":"かまってほしがり","乙女座":"きっちり整えたい","天秤座":"平和主義","蠍座":"一度好きになると一途","射手座":"自由でいたい","山羊座":"我慢強い","水瓶座":"ひとりの時間が好き","魚座":"感受性豊かで涙もろい"};
+const ASPECT_SIMPLE = {"合(コンジャンクション)":"考えていることと気持ちがほぼ同じで、ブレの少ないタイプ","六分(セクスタイル)":"考えと気持ちが自然に協力し合う、扱いやすいタイプ","四分(スクエア)":"理想と本音がぶつかりやすいけれど、それが伸びしろにもなるタイプ","三分(トライン)":"考えと気持ちがスムーズにかみ合う、安定タイプ","対立(オポジション)":"理想と本音の間で揺れやすいけれど、両方をうまく使い分けられるタイプ"};
+const ASPECT_NONE_SIMPLE = "考えと気持ちが別々に動く、切り替え上手なタイプ";
+
+const MERCURY_TEXT = {"牡羊座":"考えるよりまず口に出す、瞬発力のある話し方をします。","牡牛座":"じっくり考えてから話す、マイペースな伝え方をします。","双子座":"話題が豊富で、テンポの良い会話が得意です。","蟹座":"感情を込めた、共感重視の伝え方をします。","獅子座":"自信を持って堂々と話す、説得力のある伝え方をします。","乙女座":"筋道立てて、正確に伝えることを大事にします。","天秤座":"相手に配慮した、感じの良い伝え方をします。","蠍座":"言葉少なでも、核心を突く伝え方をします。","射手座":"率直でおおらかな、飾らない伝え方をします。","山羊座":"落ち着いて、実用的なことを伝えるのが得意です。","水瓶座":"独自の視点で、ユニークな発想を伝えます。","魚座":"感覚的で、詩的な伝え方をします。"};
+const VENUS_TEXT = {"牡羊座":"恋には情熱的、好きになったらまっすぐ突き進みます。","牡牛座":"変わらない愛情と、心地よさを大切にします。","双子座":"会話が弾む相手に惹かれる、軽やかな恋愛観です。","蟹座":"守りたい・守られたいという、情の深い恋愛観です。","獅子座":"ドラマチックで、華やかな恋愛を好みます。","乙女座":"尽くすタイプで、相手をよく観察します。","天秤座":"美しい関係と、対等なパートナーシップを求めます。","蠍座":"一途で深く、独占欲の強い恋愛観です。","射手座":"自由な関係を好み、束縛を嫌います。","山羊座":"誠実で、長く続く安定した関係を望みます。","水瓶座":"友達のような、対等でユニークな関係を好みます。","魚座":"ロマンチックで、相手に尽くす献身的な恋愛観です。"};
+const MARS_TEXT = {"牡羊座":"思い立ったらすぐ行動、勢いのある動き方をします。","牡牛座":"じっくり力をためて、着実に動くタイプです。","双子座":"複数のことを同時にこなす、器用な動き方をします。","蟹座":"守りたいもののために力を発揮するタイプです。","獅子座":"目立つ場面で、力強さを発揮します。","乙女座":"細部まで手を抜かない、丁寧な動き方をします。","天秤座":"対立を避け、協力しながら動くタイプです。","蠍座":"静かに集中し、一気に力を発揮します。","射手座":"広い視野で、思い切った行動をとります。","山羊座":"目標に向かって、粘り強く力を発揮します。","水瓶座":"独自のやり方で、周囲と違う動き方をします。","魚座":"直感に従って、柔軟に動くタイプです。"};
+
+const MOON_PHASE_NAMES = ["新月","三日月","上弦の月","十三夜","満月","十六夜","下弦の月","有明の月"];
+const MOON_PHASE_TEXT = {
+  "新月":"新しいことを始める力を持つ、スタートの月相です。直感的に動き出す力があります。",
+  "三日月":"成長への意欲にあふれる月相です。小さな一歩を積み重ねる力があります。",
+  "上弦の月":"決断力と行動力にあふれる月相です。壁を乗り越えて前進する力があります。",
+  "十三夜":"仕上げに向けて調整する力を持つ月相です。細部を整える丁寧さがあります。",
+  "満月":"物事が実り、感情も高まりやすい月相です。表現力と影響力にあふれています。",
+  "十六夜":"分かち合い、周囲に還元する力を持つ月相です。人に与える豊かさがあります。",
+  "下弦の月":"手放し、整理する力を持つ月相です。冷静に見直す力があります。",
+  "有明の月":"次の始まりに向けて静かに準備する月相です。内省的な落ち着きがあります。"
+};
+
+const ASPECT_DEFS = [
+  {name:"合(コンジャンクション)", angle:0, orb:8, tone:"neutral", text:"太陽と月が重なり合うため、意識と感情が一致しやすく、迷いの少ないまっすぐな性格が表れます。"},
+  {name:"六分(セクスタイル)", angle:60, orb:6, tone:"good", text:"太陽と月が調和的な角度にあり、意識と感情が自然に協力し合う、扱いやすい心の構造を持っています。"},
+  {name:"四分(スクエア)", angle:90, orb:8, tone:"bad", text:"太陽と月が緊張感のある角度にあり、なりたい自分と素の感情の間に葛藤を抱えやすいものの、それが成長の原動力にもなります。"},
+  {name:"三分(トライン)", angle:120, orb:8, tone:"good", text:"太陽と月が調和的な角度にあり、意識と感情がスムーズに連動する、精神的に安定した資質を持っています。"},
+  {name:"対立(オポジション)", angle:180, orb:8, tone:"bad", text:"太陽と月が向かい合う角度にあり、意識と感情の間で揺れ動きやすいものの、両極を統合することで大きなバランス感覚を得られる資質です。"}
+];
+
+// ============ 算命学(四柱式)データ ============
+const STEMS = ["甲","乙","丙","丁","戊","己","庚","辛","壬","癸"];
+const BRANCHES = ["子","丑","寅","卯","辰","巳","午","未","申","酉","戌","亥"];
+const HIDDEN_MAIN_STEM = ["癸","己","甲","乙","戊","丙","丁","己","庚","辛","戊","壬"]; // 子丑寅卯辰巳午未申酉戌亥の本気
+const TEN_GOD_TO_JUSSEI = {"比肩":"貫索星","劫財":"石門星","食神":"鳳閣星","傷官":"調舒星","偏財":"禄存星","正財":"司禄星","偏官":"牽牛星","正官":"車騎星","偏印":"龍高星","印綬":"玉堂星"};
+const JUSSEI_ONELINE = {"貫索星":"「我が道を行く」職人肌のリーダー気質","石門星":"みんなの輪を広げる世話焼きムードメーカー","鳳閣星":"笑顔で場を明るくする天性のムードメーカー","調舒星":"人と違う視点を持つ、こだわりの芸術家肌","禄存星":"気配り上手で自然と人が集まる与え上手","司禄星":"コツコツ型の堅実な貯め上手","牽牛星":"プレッシャーほど燃える生まれながらのリーダー","車騎星":"考えるより先に動く、正義感あふれる行動派","龍高星":"独自の世界を突き詰める、孤高の探求者","玉堂星":"知的で品のある、みんなに可愛がられる優等生タイプ"};
+const JUSSEI_TEXT = {
+  "貫索星":"貫索星は、自立心の強さがトレードマークの星です。誰かに指図されるより、自分で決めて自分のやり方で進みたい——だから、周りに合わせるだけの毎日には物足りなさを感じやすく、気づけば自分だけのルールで動いていることも多いはず。頑固と言われることもありますが、それは裏を返せば「一度決めたら揺るがない」という強さです。ここぞという場面でブレない人として頼りにされる一方、人に頼るのが苦手なぶん一人で抱え込みがちなので、たまには周りに甘えてみるとバランスが取れるでしょう。",
+  "石門星":"石門星は、人と人をつなぐ力に恵まれた星です。誰かと誰かを引き合わせたり、輪の中心でみんなをまとめたりすることに、自然と喜びを感じるタイプ——だから、気づけばサークルや職場のまとめ役を任されていることが多いのではないでしょうか。仲間思いで面倒見が良く、集団の中でこそ本領を発揮する星ですが、その分「みんなのために」を優先しすぎて、自分の本音を後回しにしてしまうことも。たまには自分を優先する日があってもいいはずです。",
+  "鳳閣星":"鳳閣星は、おおらかさと表現力にあふれる星です。細かいことを気にせず、その場を楽しい雰囲気に変えてしまう力を持っている——だから、一緒にいるだけで周りの人がほっとするような存在になりやすいでしょう。衣食住に恵まれやすいとも言われ、グルメや趣味を楽しむセンスにも定評あり。ただしマイペースが過ぎると「のんびりしすぎ」と映ることもあるので、ここぞという場面ではスイッチを入れる意識を持つと、さらに魅力が引き立ちます。",
+  "調舒星":"調舒星は、鋭い感性と独自の美意識を持つ星です。人と同じ答えより、自分にしか見えていない視点を大事にしたい——だから、クリエイティブな分野や「好き」を突き詰める場面で本領を発揮しやすいタイプです。繊細な感受性は大きな武器になる一方、こだわりが強いぶん孤独を感じやすい面もあります。誰かと感性を共有できる相手が見つかると、その孤独感はぐっと和らぐはずです。",
+  "禄存星":"禄存星は、人に尽くすことで自分の運も開いていく星です。困っている人を放っておけず、気づけば手を差し伸べている——だから、周りから「頼りになる人」「一緒にいると楽しい人」として自然と人脈が広がっていくタイプです。社交的な財運にも恵まれやすく、人とのつながりがそのままチャンスに変わることも多いでしょう。ただし尽くしすぎて自分が疲れてしまうこともあるので、受け取り上手になることも意識してみてください。",
+  "司禄星":"司禄星は、堅実さとコツコツ積み上げる力が持ち味の星です。派手さより、無駄のない着実な一歩を選びたい——だから、貯金や資格取得など「積み重ねがものを言う」ことで力を発揮しやすいタイプです。几帳面で信用を大切にするので、周りからは「あの人になら任せられる」と思われやすいでしょう。反面、慎重になりすぎて一歩を踏み出すのが遅れることもあるので、たまには思い切りも大切にしてみてください。",
+  "牽牛星":"牽牛星は、誇り高さと強い責任感を持つ星です。楽な道より、あえて困難な状況に飛び込んでいきたい——だから、プレッシャーのかかる場面ほど本来の力を発揮しやすいタイプです。統率力があり、いざというときに頼れるリーダーとして担がれることも多いでしょう。ただしプライドの高さが災いして、人に弱みを見せられず一人で抱え込んでしまうことも。信頼できる相手には素直に頼ってみると、周りとの関係がもっと楽になるはずです。",
+  "車騎星":"車騎星は、行動力とスピード感が持ち味の星です。悩んでいる時間があったらまず動いてみたい——だから、フットワークの軽さで周りを驚かせることも多いタイプです。義理人情に厚く、困っている人を見ると放っておけない正義感の強さも特徴です。ただし勢いで動きすぎて、後先を考えずに突っ走ってしまうこともあるので、大事な場面では一呼吸置く癖をつけると、持ち前の行動力がもっと生きてきます。",
+  "龍高星":"龍高星は、独自の世界観と探求心を持つ、少し風変わりな星です。みんなと同じ道より、自分にしか見えていないテーマを深く掘り下げたい——だから、専門分野やニッチな趣味にとことんハマるタイプになりやすいでしょう。遠方や異文化との縁も強く、海外や旅にまつわる話題で盛り上がることも多いはず。孤独を好む面もありますが、それは裏を返せば「一人の時間で力を蓄えられる」という才能でもあります。",
+  "玉堂星":"玉堂星は、知性と学問を象徴する星です。感覚よりも筋道立てて理解したい——だから、勉強や知識を積み重ねることに苦を感じにくいタイプでしょう。穏やかな品格を持ち、目上の人や先生・上司から自然と引き立てを受けやすいのも特徴です。優等生的な魅力がある一方、慎重になりすぎて挑戦を先延ばしにすることもあるので、頭で考えるだけでなく、たまには直感を信じて動いてみるのもおすすめです。"
+};
+const JUSSEI_KEYWORD = {"貫索星":"独立独歩の精神","石門星":"人をつなぐ協調性","鳳閣星":"おおらかな表現力","調舒星":"鋭い感性と美意識","禄存星":"人に尽くす面倒見の良さ","司禄星":"堅実に積み上げる力","牽牛星":"誇り高いリーダーシップ","車騎星":"行動力と正義感","龍高星":"孤高の探求心","玉堂星":"知性と品格"};
+
+const STAGE_NAMES = ["長生","沐浴","冠帯","建禄","帝旺","衰","病","死","墓","絶","胎","養"];
+const STAGE_START = [11,6,2,9,2,9,5,0,8,3]; // 甲乙丙丁戊己庚辛壬癸の長生スタート地支index
+const STAGE_DIR   = [ 1,-1,1,-1,1,-1,1,-1,1,-1];
+const STAGE_ONELINE = {"長生":"すくすく育つ、伸びしろ全開の成長株","沐浴":"心がゆらゆら、感じやすさが武器になる時期","冠帯":"自分らしさが見えてくる、背伸びしたい時期","建禄":"実力で勝負したい、自立ムード全開の時期","帝旺":"波に乗ってる、絶好調モードの時期","衰":"落ち着いて円熟味が増す、大人の時期","病":"人の痛みが分かる、優しさ全開の時期","死":"物事の本質を見つめる、探求モードの時期","墓":"コツコツ貯める、静かな蓄積の時期","絶":"リセットして生まれ変わる、転換期","胎":"可能性の種がふくらむ、これから期","養":"周りに守られながら力を蓄える、充電期"};
+const STAGE_TEXT = {
+  "長生":"長生は、物事が生まれ育っていく勢いを象徴する星です。今のあなたは、新しいことを吸収してぐんぐん伸びていくタイミング——だから、新しい環境や挑戦との相性がとても良い時期と言えるでしょう。素直な向上心があるぶん周りから可愛がられ、自然とサポートを受けやすいのも強みです。焦らず、この伸びしろを楽しむ気持ちで進んでみてください。",
+  "沐浴":"沐浴は、産まれたばかりで洗われる姿を象徴する星です。今は感受性が強く、気持ちが揺れ動きやすいタイミング——だから、些細なことで気分が上下しやすいと感じるかもしれません。ですがその繊細さは、人の気持ちに気づける優しさの裏返しでもあります。変化を楽しむ柔軟さを味方につければ、この時期ならではの魅力が輝くはずです。",
+  "冠帯":"冠帯は、成人して社会に出る準備を整える星です。今は自我が確立し始め、自分らしい道を歩もうとする力が強まっているタイミング——だから、周りの評価が気になったり、少し背伸びしたくなったりすることもあるでしょう。それは成長の証。誇りを持って一歩踏み出すことで、次のステージへの土台が固まっていきます。",
+  "建禄":"建禄は、自らの実力で地位を築いていく自立の星です。今は人に頼るより、自分の力で結果を出したいという気持ちが強まっているタイミング——だから、仕事やスキルアップに力を注ぐと成果が出やすい時期と言えます。堅実な努力を重ねることで、社会的な信用を積み上げていける星回りです。",
+  "帝旺":"帝旺は、力が最も充実した絶頂期を象徴する星です。今は強い意志とリーダーシップが発揮しやすいタイミング——だから、大きな決断や新しい挑戦をするなら今がチャンスと言えるでしょう。物事を主導する立場を任されやすく、周りを引っ張る力も自然と発揮されます。勢いがあるぶん、周りへの気配りも忘れずにいるとさらに評価が高まります。",
+  "衰":"衰は、勢いが緩やかに落ち着き始める星です。今は無理に前へ前へと突っ走るより、経験を活かして判断する力が育つタイミング——だから、これまでの積み重ねが実感として返ってきやすい時期と言えます。急がず、じっくり構えることで、周りからの信頼も深まっていくでしょう。",
+  "病":"病は、繊細さと内省を象徴する星です。今は人の痛みに敏感になり、共感力が高まっているタイミング——だから、誰かの相談に乗ったり、支えたりする場面が増えるかもしれません。優しさは大きな強みですが、自分のケアを後回しにしすぎないことも大切です。しっかり休む時間も、この時期の課題と言えるでしょう。",
+  "死":"死は、深い精神性と探求心を象徴する星です。今は表面的なことより、物事の本質をじっくり見極めたい気持ちが強まっているタイミング——だから、一人で考えごとをする時間が増えたり、精神世界や哲学的な話題に惹かれたりすることもあるでしょう。この内省の時間は、次のステージへの準備期間でもあります。",
+  "墓":"墓は、蓄積と継承を象徴する星です。今は財や知恵、経験を静かに蓄えていくタイミング——だから、派手な動きより地道な積み重ねが力になる時期と言えます。焦って結果を求めるより、じっくり貯めたものが、次の世代や次のステージへとつながっていくでしょう。",
+  "絶":"絶は、一度すべてが途切れ、新しく生まれ変わる転換点を象徴する星です。今は今までのやり方が一区切りつき、新しい可能性が開けていくタイミング——だから、大きな変化に戸惑うこともあるかもしれませんが、それは次のステージへの入り口でもあります。思い切って手放すことで、新しい風が入ってくる時期です。",
+  "胎":"胎は、新しい命が宿る、可能性の芽生えを象徴する星です。今はまだ形になっていない才能やアイデアを、内側にたくさん秘めているタイミング——だから、焦って結果を出そうとするより、じっくり育てる意識を持つとうまくいきやすいでしょう。今まいた種が、これから先の大きな実りにつながっていきます。",
+  "養":"養は、守られながら静かに力を蓄える星です。今は無理に一人で頑張るより、周りのサポートを受け入れることで力が育っていくタイミング——だから、人に頼ることを遠慮しなくて大丈夫。じっくり自分を育てる時間を過ごすことで、次のステップに向けたエネルギーがしっかり蓄えられていきます。"
+};
+const STAGE_KEYWORD = {"長生":"素直な成長力","沐浴":"揺れ動く感受性","冠帯":"確立されていく自我","建禄":"自立した実力","帝旺":"充実した力強さ","衰":"円熟した落ち着き","病":"繊細な共感力","死":"深い精神性","墓":"静かな蓄積の力","絶":"転換と再生の力","胎":"秘めた可能性","養":"じっくり育つ力"};
+
+const ELEMENT_NAMES = ["木","火","土","金","水"];
+const ELEMENT_COLORS = ["var(--earth)","var(--fire)","#B08D3E","#9A9A9A","var(--water)"];
+const ELEMENT_TRAIT = {
+  "木":{many:"行動力があり成長意欲にあふれるタイプ。新しいことにどんどん挑戦したくなるでしょう。", few:"じっくり型で、勢いより着実さを好む面があるかもしれません。"},
+  "火":{many:"情熱的で表現力豊か、周りを明るく照らすタイプ。感情がストレートに出やすいでしょう。", few:"感情を表に出すより、内側で静かに燃やすタイプかもしれません。"},
+  "土":{many:"安定感があり、信頼される縁の下の力持ちタイプ。地に足のついた考え方をします。", few:"安定より変化を好み、フットワーク軽く動きたいタイプかもしれません。"},
+  "金":{many:"意志が強く、ルールや筋を大切にするタイプ。決断力に優れています。", few:"白黒はっきりさせるより、柔軟に臨機応変に対応するタイプかもしれません。"},
+  "水":{many:"知的で柔軟、状況に合わせて形を変えられるタイプ。直感力にも優れています。", few:"じっくり考えるより、感覚や経験を信じて動くタイプかもしれません。"}
+};
+
+// ============ マヤ暦データ ============
+const MAYA_SIGNS = ["イミシュ","イーク","アクバル","カン","チクチャン","キミ","マニク","ラマト","ムルク","オク","チュエン","エブ","ベン","イシュ","メン","キブ","カバン","エツナブ","カウアク","アハウ"];
+const MAYA_ONELINE = {"イミシュ":"すべてを生み出す、パワフルな母なる根源","イーク":"言葉と風で人をつなぐ、天性のコミュニケーター","アクバル":"夜に力を発揮する、静かな直感の持ち主","カン":"種をまき、じっくり育てる豊かさの担い手","チクチャン":"本能で動く、変化を恐れないエネルギッシュタイプ","キミ":"手放し上手な、身軽な生まれ変わり上手","マニク":"手先が器用な、癒やしと達成のスペシャリスト","ラマト":"人間関係もお財布も、調和で満たされるタイプ","ムルク":"感情豊かで、まわりを潤す癒やし系","オク":"仲間を大切にする、義理堅い忠犬タイプ","チュエン":"遊び心満載の、天性のクリエイター","エブ":"みんなと歩む、協力上手な道連れタイプ","ベン":"家族思いで芯が通った、支える存在","イシュ":"野生の勘が冴える、ミステリアスな直感派","メン":"高い視点から未来を見通す、鷲の目タイプ","キブ":"古き知恵を受け継ぐ、頼れる戦士タイプ","カバン":"大地のようにどっしり構える、共鳴上手","エツナブ":"物事をズバッと見抜く、正直な鏡タイプ","カウアク":"嵐のように変化を巻き起こす、浄化のパワフル担当","アハウ":"まわりを照らす太陽のような、完成に向かう存在"};
+const MAYA_SIGN_TEXT = {
+  "イミシュ":"イミシュは、すべての始まりを象徴する紋章です。ゼロから何かを生み出す根源的なエネルギーを持っている——だから、新しいことを始める場面でひときわ力を発揮しやすいタイプでしょう。母性的な包容力があり、周りを安心させる存在感も持ち合わせています。何かを一から立ち上げるとき、あなたの紋章の力が背中を押してくれるはずです。",
+  "イーク":"イークは、風を象徴する紋章です。目に見えないもの——言葉やひらめき、空気感を敏感に感じ取る力を持っている——だから、人に何かを伝えたり、場の空気を読んだりすることが自然と得意になりやすいでしょう。精神性の高いテーマに惹かれることも多く、話していて「深いね」と言われることも多いはずです。",
+  "アクバル":"アクバルは、夜を象徴する紋章です。にぎやかな昼より、静かな時間にこそ本音や直感が研ぎ澄まされるタイプ——だから、一人の時間をしっかり取ることで物事の本質が見えやすくなるでしょう。内省的な力は大きな武器になりますが、たまには外に出て人と話すことでバランスが取れます。",
+  "カン":"カンは、種を象徴する紋章です。今すぐの結果より、時間をかけて育てていくことに価値を感じるタイプ——だから、長期的な計画やコツコツ型の取り組みと相性が良いでしょう。まいた種は必ず育つという安心感を持って焦らず取り組むと、思わぬ豊かさに恵まれるはずです。",
+  "チクチャン":"チクチャンは、生命力を象徴する紋章です。頭で考えるより先に、本能的な直感で動きたくなるタイプ——だから、変化の多い状況でもたくましく適応していける力を持っています。エネルギッシュな分、じっとしているのが苦手なこともあるので、体を動かす機会を意識的に作ると調子が整いやすいでしょう。",
+  "キミ":"キミは、変容を象徴する紋章です。終わりを恐れるより、そこから新しく生まれ変わることに意味を見出せるタイプ——だから、環境や関係性が変わる場面でも、意外と前向きに切り替えられるでしょう。手放すことを恐れない身軽さは、大きな武器になります。",
+  "マニク":"マニクは、手を象徴する紋章です。頭で考えるだけでなく、実際に手を動かして形にしていく力を持っている——だから、ものづくりやケアなど「手を使う」場面で力を発揮しやすいタイプでしょう。人を癒やす力にも恵まれ、そばにいるだけで安心感を与える存在になりやすいはずです。",
+  "ラマト":"ラマトは、豊穣を象徴する紋章です。一人で頑張るより、周りとの調和の中で物事を実らせていきたいタイプ——だから、良い人間関係がそのまま運の良さにつながりやすいでしょう。美しいものやここちよさを大切にする感覚も持っていて、暮らしの豊かさを自然と引き寄せます。",
+  "ムルク":"ムルクは、月の水を象徴する紋章です。感情を内側で消化し、浄化していく力を持っている——だから、涙もろかったり共感力が高かったりすることも多いでしょう。その豊かな情緒は、周りの人の心を潤す力にもなります。自分の感情もきちんと大切にしてあげてください。",
+  "オク":"オクは、忠誠を象徴する紋章です。広く浅くより、信頼できる相手と深い絆を築きたいタイプ——だから、一度心を許した相手にはとことん誠実に向き合うでしょう。仲間からの信頼は厚く、いざというときに頼れる存在として重宝されるはずです。",
+  "チュエン":"チュエンは、創造性を象徴する紋章です。まじめさより、まず楽しんでみることを大事にしたいタイプ——だから、遊び心のある発想やアイデアで周りを驚かせることも多いでしょう。芸術的なセンスにも恵まれ、自由な発想を活かせる場でいきいきと力を発揮します。",
+  "エブ":"エブは、道を象徴する紋章です。一人で突き進むより、誰かと一緒に歩んでいくことに価値を感じるタイプ——だから、チームでの取り組みや長い付き合いの関係の中で力を発揮しやすいでしょう。着実に歩みを進める粘り強さも、あなたの隠れた強みです。",
+  "ベン":"ベンは、柱を象徴する紋章です。自分の探求心を大事にしながらも、家族や身近な人を支える役割を自然と引き受けるタイプ——だから、周りから「あの人がいると安心する」と思われやすいでしょう。しっかりとした軸を持っているぶん、周りの拠り所になりやすい紋章です。",
+  "イシュ":"イシュは、大地の魔術性を象徴する紋章です。理屈より、野生的な直感やひらめきを信じて動きたいタイプ——だから、周りから「勘がいいね」と言われることも多いでしょう。目に見えない力とのつながりを感じやすく、自然や動物との相性も良い傾向があります。",
+  "メン":"メンは、鷲を象徴する紋章です。目の前のことだけでなく、少し先の未来まで見通したくなるタイプ——だから、計画性のある物事や大きな展望を描く場面で力を発揮しやすいでしょう。広い視野を持っているぶん、周りから頼りになるアドバイザーとして見られることも多いはずです。",
+  "キブ":"キブは、戦士の知恵を象徴する紋章です。新しいものだけでなく、受け継がれてきた知恵や経験を大切にしたいタイプ——だから、伝統や歴史のあるものに自然と惹かれることも多いでしょう。揺るがない意志の強さは、いざというときに周りを支える力になります。",
+  "カバン":"カバンは、大地の力を象徴する紋章です。周りの動きに敏感に反応し、まわりと共鳴しながら物事を動かしていくタイプ——だから、場の空気を読んで動くのが得意でしょう。力強いエネルギーを持っている分、どっしり構えることで周りに安心感を与えます。",
+  "エツナブ":"エツナブは、鏡を象徴する紋章です。曖昧なことより、物事をはっきり見極めてスパッと決断したいタイプ——だから、周りから「はっきり言ってくれて助かる」と頼られることも多いでしょう。真実を映し出す力があるぶん、言葉選びには少し優しさを添えると、さらに魅力が増すでしょう。",
+  "カウアク":"カウアクは、嵐を象徴する紋章です。穏やかな現状維持より、大きな変化を通じて成長したいタイプ——だから、環境が変わる場面でこそエネルギーが湧いてくるでしょう。浄化と変革の力を持っているぶん、周りの空気を一新するきっかけを作る存在になりやすいはずです。",
+  "アハウ":"アハウは、太陽を象徴する紋章です。物事を最後までやり遂げ、悟りや完成へと向かっていく力を持っている——だから、周りを照らすような、自然と人の中心になる存在になりやすいでしょう。責任感の強さと包容力を兼ね備えた、頼りになる紋章です。"
+};
+const MAYA_KEYWORD = {"イミシュ":"物事を生み出す根源の力","イーク":"風のように伝える力","アクバル":"夜に育つ内省の力","カン":"種をまき育てる力","チクチャン":"本能に根ざす生命力","キミ":"手放し生まれ変わる力","マニク":"癒やしと達成の力","ラマト":"調和と豊かさを呼ぶ力","ムルク":"感情を浄化する力","オク":"絆を大切にする力","チュエン":"遊び心のある創造力","エブ":"道を歩み協力する力","ベン":"家族や柱となる力","イシュ":"野生の知恵と直感","メン":"未来を見通す展望力","キブ":"知恵を受け継ぐ力","カバン":"大地と共鳴する力","エツナブ":"真実を見極める力","カウアク":"浄化と変革の力","アハウ":"悟りと完成へ向かう力"};
+const TONE_ONELINE = {1:"目的意識バツグン、スタートダッシュの音",2:"二択に強い、協力上手の音",3:"つながりを活性化させる、絆の音",4:"きっちり形にする、安定の音",5:"自然と中心に立つ、指揮官の音",6:"リズムを整える、バランサーの音",7:"波長を合わせる、感度の高い音",8:"お手本になる、調和の音",9:"最後までやり抜く、到達の音",10:"有言実行、完成させる音",11:"身軽に放つ、解放の音",12:"みんなで分かち合う、協働の音",13:"すべてを受け止める、超越の音"};
+const TONE_TEXT = {
+  1:"「磁気の音」は、物事を始める目的を象徴します。芯にある目的意識を強く持ち、物事の出発点に立つ力がある——だから、何かを始めるときに迷いが少なく、まっすぐ目標に向かっていけるタイプと言えるでしょう。",
+  2:"「月の音」は、二極性と協力を象徴します。物事を対比的に捉え、挑戦や協力を通じて選択していく力がある——だから、対立する意見の間に立ってうまく調整したり、誰かと力を合わせたりする場面で頼りにされやすいでしょう。",
+  3:"「電気の音」は、活性化と絆を象徴します。周囲との関わりの中でエネルギーを高め、行動へとつなげていく力がある——だから、人と人をつなげたり周りを元気づけたりする役回りになりやすいタイプです。",
+  4:"「自己存在の音」は、形と測定を象徴します。物事に具体的な形を与え、着実に定義していく力がある——だから、アイデアを実際の形にしたり物事をきちんと定義したりするのが得意なタイプでしょう。",
+  5:"「倍音の音」は、中心と指令を象徴します。自らが中心となり、周囲に働きかけていく力がある——だから、気づけばグループの中心やまとめ役になっていることが多いタイプです。",
+  6:"「律動の音」は、組織とバランスを象徴します。物事を整え、リズムよく前進させていく力がある——だから、物事の優先順位を整理したり、ちょうどいいペースを作ったりするのが得意でしょう。",
+  7:"「共振の音」は、調律とチャネルを象徴します。物事の波長を合わせ、見えないものと同調していく力がある——だから、その場の空気や相手の気持ちを敏感にキャッチできるタイプと言えます。",
+  8:"「銀河の音」は、調和と模範を象徴します。まわりの手本となるような、まとまりのある力がある——だから、周りから「あの人みたいになりたい」と思われるような、自然な模範になりやすいでしょう。",
+  9:"「太陽の音」は、到達と脈動を象徴します。目標に向けて粘り強く進み続ける力がある——だから、途中で投げ出さず、粘り強くゴールまで進んでいける力を持っています。",
+  10:"「惑星の音」は、完成と顕在化を象徴します。物事を現実の形として成し遂げていく力がある——だから、計画を最後まで形にして、周りに結果を示せるタイプでしょう。",
+  11:"「スペクトルの音」は、解放と浄化を象徴します。とらわれていたものを手放し、新しい流れを生み出す力がある——だから、要らないものを手放して、新しい流れを呼び込むのが得意なタイプです。",
+  12:"「水晶の音」は、協働と普遍化を象徴します。人と力を合わせ、広く共有していく力がある——だから、一人で抱え込むより、周りと力を合わせることで大きな成果を生み出せるでしょう。",
+  13:"「宇宙の音」は、超越と忍耐を象徴します。物事を大きな視点で受け止め、次の段階へとつなげていく力がある——だから、大きな視点で物事を受け止め、次のステージへ橋渡しする役割を担いやすいタイプです。"
+};
+const TONE_KEYWORD = {1:"物事を始める目的の力",2:"協力し二極を活かす力",3:"絆を活性化させる力",4:"形を定め安定させる力",5:"中心となり指揮する力",6:"バランスを整える力",7:"調律し波長を合わせる力",8:"調和を体現する力",9:"目標に到達する力",10:"物事を完成させる力",11:"とらわれを解き放つ力",12:"協働し普遍化する力",13:"すべてを超越し受け容れる力"};
+const HAAB_MONTHS = ["ポップ","ウォ","シープ","ソツ","セック","シュル","ヤシュキン","モル","チェン","ヤシュ","サック","ケフ","マック","カンキン","ムワン","パシュ","カヤブ","クムク"];
+
+// ============ 天体計算(astronomy-engine、失敗時は簡易近似にフォールバック) ============
+let ASTRO_AVAILABLE = false;
+try{ ASTRO_AVAILABLE = (typeof Astronomy !== "undefined" && typeof Astronomy.SunPosition === "function"); }catch(e){ ASTRO_AVAILABLE = false; }
+
+function zodiacIndexFromLongitude(lonDeg){ return Math.floor((((lonDeg%360)+360)%360)/30); }
+
+function approxSunLongitude(date){
+  const start = Date.UTC(date.getUTCFullYear(),0,1);
+  const dayOfYear = Math.floor((date.getTime()-start)/86400000);
+  return ((dayOfYear - 79) * (360/365.25) + 360) % 360;
+}
+function approxMoonLongitude(date){
+  const knownNewMoon = Date.UTC(2000,0,6,18,14);
+  const synodic = 29.530588853;
+  const days = (date.getTime() - knownNewMoon) / 86400000;
+  const phaseFrac = ((days % synodic) + synodic) % synodic / synodic;
+  return (approxSunLongitude(date) + phaseFrac*360) % 360;
+}
+function getSunLongitude(date){
+  if(ASTRO_AVAILABLE){
+    try{ const pos = Astronomy.SunPosition(date); if(pos && typeof pos.elon==="number") return pos.elon; }catch(e){}
+  }
+  return approxSunLongitude(date);
+}
+function getMoonLongitude(date){
+  if(ASTRO_AVAILABLE){
+    try{
+      if(typeof Astronomy.EclipticGeoMoon === "function"){
+        const g = Astronomy.EclipticGeoMoon(date);
+        if(g && typeof g.lon==="number") return g.lon;
+      }
+      if(typeof Astronomy.GeoVector === "function" && typeof Astronomy.Ecliptic === "function"){
+        const vec = Astronomy.GeoVector(Astronomy.Body.Moon, date, true);
+        const ecl = Astronomy.Ecliptic(vec);
+        if(ecl && typeof ecl.elon==="number") return ecl.elon;
+      }
+    }catch(e){}
+  }
+  return approxMoonLongitude(date);
+}
+function getPlanetLongitude(bodyName, date){
+  if(!ASTRO_AVAILABLE) return null;
+  try{
+    const body = Astronomy.Body[bodyName];
+    if(!body) return null;
+    const vec = Astronomy.GeoVector(body, date, true);
+    const ecl = Astronomy.Ecliptic(vec);
+    if(ecl && typeof ecl.elon==="number") return ecl.elon;
+  }catch(e){}
+  return null;
+}
+function calcMoonPhaseIndex(sunLon, moonLon){
+  const angle = ((moonLon - sunLon)%360+360)%360;
+  return Math.floor(((angle+22.5)%360)/45);
+}
+function getObliquityDeg(date){
+  if(ASTRO_AVAILABLE){
+    try{
+      if(typeof Astronomy.e_tilt === "function"){
+        const et = Astronomy.e_tilt(date);
+        if(et){ if(typeof et.tobl==="number") return et.tobl; if(typeof et.mobl==="number") return et.mobl; }
+      }
+    }catch(e){}
+  }
+  const T = (date.getTime() - Date.UTC(2000,0,1,12)) / (36525*86400000);
+  return 23.4392911 - 0.0130042*T;
+}
+function getGMSTHours(date){
+  if(ASTRO_AVAILABLE){
+    try{ if(typeof Astronomy.SiderealTime === "function"){ const g = Astronomy.SiderealTime(date); if(typeof g==="number") return g; } }catch(e){}
+  }
+  const JD = date.getTime()/86400000 + 2440587.5;
+  const T = (JD - 2451545.0)/36525;
+  let gmst = 280.46061837 + 360.98564736629*(JD-2451545.0) + 0.000387933*T*T - (T*T*T)/38710000;
+  gmst = ((gmst % 360)+360)%360;
+  return gmst/15;
+}
+function calcAscendant(date, latDeg, lonDeg){
+  const gmstHours = getGMSTHours(date);
+  const lstHours = gmstHours + lonDeg/15;
+  const ramcDeg = ((lstHours*15)%360+360)%360;
+  const epsRad = getObliquityDeg(date)*Math.PI/180;
+  const phiRad = latDeg*Math.PI/180;
+  const ramcRad = ramcDeg*Math.PI/180;
+  const yv = -Math.cos(ramcRad);
+  const xv = Math.sin(epsRad)*Math.tan(phiRad) + Math.cos(epsRad)*Math.sin(ramcRad);
+  let asc = Math.atan2(yv, xv) * 180/Math.PI;
+  return ((asc%360)+360)%360;
+}
+function degreeInSign(lon){
+  const n = ((lon%360)+360)%360;
+  const deg = n%30;
+  let wholeDeg = Math.floor(deg);
+  let minute = Math.round((deg-wholeDeg)*60);
+  if(minute===60){ minute=0; wholeDeg+=1; }
+  return {wholeDeg, minute};
+}
+function angleDiff(a,b){ let d = Math.abs(a-b)%360; if(d>180) d = 360-d; return d; }
+function findAspect(a,b){
+  const d = angleDiff(a,b);
+  for(const asp of ASPECT_DEFS){ if(Math.abs(d-asp.angle) <= asp.orb) return Object.assign({exactDiff:d}, asp); }
+  return null;
+}
+
+// ============ 算命学: 日干支・立春・節月 ============
+function calcDayKanshi(y,m,d){
+  const epoch = Date.UTC(1900,0,31); // 1900-01-31 = 甲子
+  const target = Date.UTC(y,m-1,d);
+  const daysSince = Math.round((target - epoch)/86400000);
+  const idx = ((daysSince % 60)+60)%60;
+  return { idx, stem: STEMS[idx%10], branch: BRANCHES[idx%12], kanshi: STEMS[idx%10]+BRANCHES[idx%12] };
+}
+function findLichun(year){
+  // 立春(黄経315度)のUTC近似時刻を反復計算で求める
+  let guess = new Date(Date.UTC(year,1,4,0,0));
+  for(let iter=0; iter<6; iter++){
+    const lon = getSunLongitude(guess);
+    let diff = ((315 - lon + 540)%360)-180;
+    const deltaDays = diff/0.9856;
+    guess = new Date(guess.getTime() + deltaDays*86400000);
+  }
+  return guess;
+}
+function calcYearGanshi(birthUTCDate, calendarYear){
+  const lichun = findLichun(calendarYear);
+  let effectiveYear = calendarYear;
+  if(birthUTCDate.getTime() < lichun.getTime()) effectiveYear -= 1;
+  const idx = ((effectiveYear-1984)%60+60)%60; // 1984年=甲子
+  return { idx, stem: STEMS[idx%10], branch: BRANCHES[idx%12], kanshi: STEMS[idx%10]+BRANCHES[idx%12], effectiveYear, lichun };
+}
+const GOTORAN_START = [2,4,6,8,0,2,4,6,8,0]; // 五虎遁: 年干index(0-9)ごとの寅月の月干index
+function calcMonthGanshi(birthUTCDate, yearStemIdx){
+  const lon = getSunLongitude(birthUTCDate);
+  const seg = Math.floor((((lon-315)%360+360)%360)/30); // 0=寅月...11=丑月
+  const branchIdx = (seg+2)%12;
+  const startStem = GOTORAN_START[yearStemIdx];
+  const stemIdx = (startStem+seg)%10;
+  return { branchIdx, stemIdx, stem: STEMS[stemIdx], branch: BRANCHES[branchIdx], kanshi: STEMS[stemIdx]+BRANCHES[branchIdx], seg };
+}
+function stemElementIndex(i){ return Math.floor(i/2); } // 0木1火2土3金4水
+function tenGod(dayStemIdx, targetStemIdx){
+  const de=stemElementIndex(dayStemIdx), te=stemElementIndex(targetStemIdx);
+  const same = (dayStemIdx%2)===(targetStemIdx%2);
+  if(de===te) return same?"比肩":"劫財";
+  if((de+1)%5===te) return same?"食神":"傷官";
+  if((de+2)%5===te) return same?"偏財":"正財";
+  if((te+2)%5===de) return same?"偏官":"正官";
+  if((te+1)%5===de) return same?"偏印":"印綬";
+  return "比肩";
+}
+function twelveStage(dayStemIdx, targetBranchIdx){
+  const start = STAGE_START[dayStemIdx], dir = STAGE_DIR[dayStemIdx];
+  for(let i=0;i<12;i++){ const idx=((start+i*dir)%12+12)%12; if(idx===targetBranchIdx) return STAGE_NAMES[i]; }
+  return STAGE_NAMES[0];
+}
+
+// ============ マヤ暦: JDN/ツォルキン/ハアブ/ロングカウント ============
+function gregorianToJDN(y,m,d){
+  const a = Math.floor((14-m)/12);
+  const yy = y + 4800 - a;
+  const mm = m + 12*a - 3;
+  return d + Math.floor((153*mm+2)/5) + 365*yy + Math.floor(yy/4) - Math.floor(yy/100) + Math.floor(yy/400) - 32045;
+}
+function calcMaya(y,m,d){
+  const jdn = gregorianToJDN(y,m,d);
+  const kin = jdn - 584283;
+  const number = (((kin+3)%13)+13)%13 + 1;
+  const signIndex = (((kin+19)%20)+20)%20;
+  const haabPos = (((kin+347)%365)+365)%365;
+  let haabMonth, haabDay;
+  if(haabPos<360){ haabMonth = Math.floor(haabPos/20); haabDay = (haabPos%20)+1; }
+  else { haabMonth = -1; haabDay = (haabPos-360)+1; } // -1 = ワイエブ(無名の5日間)
+  let k = kin;
+  const baktun = Math.floor(k/144000); k -= baktun*144000;
+  const katun = Math.floor(k/7200); k -= katun*7200;
+  const tun = Math.floor(k/360); k -= tun*360;
+  const uinal = Math.floor(k/20); k -= uinal*20;
+  const kinRem = k;
+  return { kin, number, signIndex, sign: MAYA_SIGNS[signIndex], haabMonth, haabDay, longCount:{baktun,katun,tun,uinal,kin:kinRem} };
+}
+
+// ============ ホロスコープ略図(SVG、ASCを9時方向に固定した簡易プロ仕様) ============
+function renderWheel(sunLon, moonLon, ascLon, aspect, mercuryLon, venusLon, marsLon){
+  const size = 380, cx = size/2, cy = size/2;
+  const rBandOuter = 168, rBandInner = 136, rMark = 120, rPlanetMark = 92;
+  const rotationOffset = (ascLon!==null && ascLon!==undefined) ? (ascLon - 180) : 0;
+  function toXY(angleDeg, r){
+    const rad = angleDeg*Math.PI/180;
+    return { x: cx + r*Math.cos(rad), y: cy - r*Math.sin(rad) };
+  }
+  function screenAngle(trueLon){ return trueLon - rotationOffset; }
+
+  // 元素帯(多角形近似でパイセグメントを描画。円弧コマンドを使わず線分で滑らかに近似)
+  let bandPaths = "";
+  for(let i=0;i<12;i++){
+    const a1 = screenAngle(i*30), a2 = screenAngle(i*30+30);
+    let d = "";
+    for(let t=0;t<=30;t+=2){
+      const p = toXY(a1 + (a2-a1)*(t/30), rBandOuter);
+      d += (t===0?"M":"L") + p.x.toFixed(2) + "," + p.y.toFixed(2) + " ";
+    }
+    for(let t=30;t>=0;t-=2){
+      const p = toXY(a1 + (a2-a1)*(t/30), rBandInner);
+      d += "L" + p.x.toFixed(2) + "," + p.y.toFixed(2) + " ";
+    }
+    d += "Z";
+    const el = ELEMENT_OF_SIGN[i];
+    const color = el==="fire" ? "var(--fire)" : el==="earth" ? "var(--earth)" : el==="air" ? "var(--air)" : "var(--water)";
+    bandPaths += `<path d="${d}" fill="${color}" opacity="0.16" stroke="${color}" stroke-width="0.6" stroke-opacity="0.4"/>`;
+  }
+
+  // 度数目盛り(10度ごと)とサイン境界線(30度ごと)
+  let ticks = "";
+  for(let deg=0; deg<360; deg+=10){
+    const a = screenAngle(deg);
+    const isBoundary = (deg%30===0);
+    const p1 = toXY(a, isBoundary ? rBandInner-16 : rBandInner-6);
+    const p2 = toXY(a, rBandInner);
+    ticks += `<line x1="${p1.x.toFixed(2)}" y1="${p1.y.toFixed(2)}" x2="${p2.x.toFixed(2)}" y2="${p2.y.toFixed(2)}" stroke="var(--wheel-line)" stroke-width="${isBoundary?1.1:0.5}" opacity="${isBoundary?0.75:0.4}"/>`;
+  }
+
+  // サイングリフ
+  let signLabels = "";
+  for(let i=0;i<12;i++){
+    const mid = i*30+15;
+    const p = toXY(screenAngle(mid), (rBandOuter+rBandInner)/2);
+    signLabels += `<text x="${p.x.toFixed(2)}" y="${(p.y+5).toFixed(2)}" text-anchor="middle" font-size="15" fill="var(--wheel-line)" font-weight="700">${ZODIAC_SYMBOL[i]}</text>`;
+  }
+
+  // 内円(度数目盛りの内側の枠)+ 中央のグラデーション背景 + グローフィルター
+  const rInnerCircle = rBandInner - 16 - 8;
+  const defs = `<defs>
+    <radialGradient id="centerGlow" cx="50%" cy="50%" r="60%">
+      <stop offset="0%" style="stop-color:var(--accent-soft);stop-opacity:0.16"/>
+      <stop offset="100%" style="stop-color:var(--panel);stop-opacity:0"/>
+    </radialGradient>
+    <filter id="markerGlow" x="-80%" y="-80%" width="260%" height="260%">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>`;
+  let centerGlow = `<circle cx="${cx}" cy="${cy}" r="${rInnerCircle}" fill="url(#centerGlow)"/>`;
+  let innerCircle = `<circle cx="${cx}" cy="${cy}" r="${rInnerCircle}" fill="none" stroke="var(--wheel-line)" stroke-width="0.8" opacity="0.5"/>`;
+  let outerCircle = `<circle cx="${cx}" cy="${cy}" r="${rBandOuter}" fill="none" stroke="var(--wheel-line)" stroke-width="1.4"/><circle cx="${cx}" cy="${cy}" r="${rBandOuter+5}" fill="none" stroke="var(--wheel-line)" stroke-width="0.7" opacity="0.5"/>`;
+  let innerBandCircle = `<circle cx="${cx}" cy="${cy}" r="${rBandInner}" fill="none" stroke="var(--wheel-line)" stroke-width="0.8" opacity="0.6"/>`;
+
+  // ASC-DESC軸線
+  let ascAxis = "";
+  if(ascLon!==null && ascLon!==undefined){
+    const p1 = toXY(screenAngle(ascLon), rInnerCircle);
+    const p2 = toXY(screenAngle(ascLon+180), rInnerCircle);
+    ascAxis = `<line x1="${p1.x.toFixed(2)}" y1="${p1.y.toFixed(2)}" x2="${p2.x.toFixed(2)}" y2="${p2.y.toFixed(2)}" stroke="var(--wheel-line)" stroke-width="1" opacity="0.55" stroke-dasharray="2,3"/>`;
+  }
+
+  // 太陽-月 アスペクト線
+  let aspectLine = "";
+  if(aspect){
+    const p1 = toXY(screenAngle(sunLon), rInnerCircle*0.6);
+    const p2 = toXY(screenAngle(moonLon), rInnerCircle*0.6);
+    const col = aspect.tone==="good" ? "var(--good)" : aspect.tone==="bad" ? "var(--bad)" : "var(--wheel-line)";
+    aspectLine = `<line x1="${p1.x.toFixed(2)}" y1="${p1.y.toFixed(2)}" x2="${p2.x.toFixed(2)}" y2="${p2.y.toFixed(2)}" stroke="${col}" stroke-width="1.2" opacity="0.7" stroke-dasharray="3,3"/>`;
+  }
+
+  function marker(lon, label){
+    if(lon===null || lon===undefined) return "";
+    const p = toXY(screenAngle(lon), rMark);
+    return `<g filter="url(#markerGlow)"><circle cx="${p.x.toFixed(2)}" cy="${p.y.toFixed(2)}" r="12.5" fill="var(--panel)" stroke="var(--wheel-line)" stroke-width="1.5"/>
+            <text x="${p.x.toFixed(2)}" y="${(p.y+4.5).toFixed(2)}" text-anchor="middle" font-size="12" fill="var(--wheel-line)" font-weight="700">${label}</text></g>`;
+  }
+  function planetMarker(lon, label){
+    if(lon===null || lon===undefined) return "";
+    const p = toXY(screenAngle(lon), rPlanetMark);
+    return `<circle cx="${p.x.toFixed(2)}" cy="${p.y.toFixed(2)}" r="8.5" fill="var(--panel)" stroke="var(--accent-soft)" stroke-width="1.1" opacity="0.9"/>
+            <text x="${p.x.toFixed(2)}" y="${(p.y+3).toFixed(2)}" text-anchor="middle" font-size="9.5" fill="var(--accent-soft)" font-weight="700">${label}</text>`;
+  }
+  let ascLabel = "";
+  if(ascLon!==null && ascLon!==undefined){
+    const p = toXY(screenAngle(ascLon), rBandOuter+18);
+    ascLabel = `<text x="${p.x.toFixed(2)}" y="${(p.y+4).toFixed(2)}" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="800">ASC</text>`;
+  }
+
+  const svg = `
+  <svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" xmlns="http://www.w3.org/2000/svg">
+    ${defs}
+    ${centerGlow}
+    ${bandPaths}
+    ${outerCircle}${innerBandCircle}${innerCircle}
+    ${ticks}
+    ${signLabels}
+    ${ascAxis}
+    ${aspectLine}
+    ${planetMarker(mercuryLon,"☿")}
+    ${planetMarker(venusLon,"♀")}
+    ${planetMarker(marsLon,"♂")}
+    ${marker(sunLon,"☉")}
+    ${marker(moonLon,"☽")}
+    ${ascLabel}
+  </svg>`;
+  document.getElementById("wheelHolder").innerHTML = svg;
+}
+
+// ============ フォーム処理 ============
+const form = document.getElementById("birthForm");
+const timeUnknownChk = document.getElementById("timeUnknown");
+const birthTimeInput = document.getElementById("birthTime");
+const errorBox = document.getElementById("errorBox");
+timeUnknownChk.addEventListener("change", ()=>{ birthTimeInput.disabled = timeUnknownChk.checked; });
+
+form.addEventListener("submit", function(e){
+  e.preventDefault();
+  errorBox.style.display = "none";
+
+  const dateVal = document.getElementById("birthDate").value;
+  if(!dateVal){ errorBox.textContent="生年月日を入力してください。"; errorBox.style.display="block"; return; }
+  const [y,m,d] = dateVal.split("-").map(Number);
+  const timeUnknown = timeUnknownChk.checked;
+  let hh=12, mm=0;
+  if(!timeUnknown && birthTimeInput.value){ const p=birthTimeInput.value.split(":").map(Number); hh=p[0]; mm=p[1]; }
+  else if(!timeUnknown && !birthTimeInput.value){ errorBox.textContent="出生時刻を入力するか、「出生時刻が分からない」にチェックを入れてください。"; errorBox.style.display="block"; return; }
+
+  const prefIdx = Number(document.getElementById("birthPref").value);
+  const pref = PREFS[prefIdx];
+  const name = document.getElementById("subjectName").value.trim() || "ご依頼";
+  const utcDate = new Date(Date.UTC(y, m-1, d, hh-9, mm)); // JST(UTC+9)→UTC
+
+  // --- 西洋占星術 ---
+  const sunLon = getSunLongitude(utcDate);
+  const sunSign = ZODIAC[zodiacIndexFromLongitude(sunLon)];
+  const sunDeg = degreeInSign(sunLon);
+
+  let moonLon;
+  if(timeUnknown){ moonLon = getMoonLongitude(new Date(Date.UTC(y, m-1, d, 12-9, 0))); }
+  else { moonLon = getMoonLongitude(utcDate); }
+  const moonSign = ZODIAC[zodiacIndexFromLongitude(moonLon)];
+  const moonDeg = degreeInSign(moonLon);
+
+  let ascLon = null, ascSign = null, ascDeg = null;
+  if(!timeUnknown){
+    ascLon = calcAscendant(utcDate, pref.lat, pref.lon);
+    ascSign = ZODIAC[zodiacIndexFromLongitude(ascLon)];
+    ascDeg = degreeInSign(ascLon);
+  }
+  const aspect = findAspect(sunLon, moonLon);
+
+  const mercuryLon = getPlanetLongitude("Mercury", utcDate);
+  const venusLon = getPlanetLongitude("Venus", utcDate);
+  const marsLon = getPlanetLongitude("Mars", utcDate);
+  const mercurySign = mercuryLon!==null ? ZODIAC[zodiacIndexFromLongitude(mercuryLon)] : null;
+  const venusSign = venusLon!==null ? ZODIAC[zodiacIndexFromLongitude(venusLon)] : null;
+  const marsSign = marsLon!==null ? ZODIAC[zodiacIndexFromLongitude(marsLon)] : null;
+  const moonPhaseName = MOON_PHASE_NAMES[calcMoonPhaseIndex(sunLon, moonLon)];
+
+  // --- 算命学(四柱式) ---
+  const dayG = calcDayKanshi(y,m,d);
+  const yearG = calcYearGanshi(utcDate, y);
+  const monthG = calcMonthGanshi(utcDate, yearG.idx%10);
+  const monthHiddenStemIdx = STEMS.indexOf(HIDDEN_MAIN_STEM[monthG.branchIdx]);
+  const tg = tenGod(dayG.idx%10, monthHiddenStemIdx);
+  const jussei = TEN_GOD_TO_JUSSEI[tg];
+  const stage = twelveStage(dayG.idx%10, yearG.idx%12);
+
+  const elemCount = [0,0,0,0,0];
+  [dayG.idx%10, yearG.idx%10, monthG.stemIdx].forEach(si=>{ elemCount[stemElementIndex(si)]++; });
+  [dayG.idx%12, yearG.idx%12, monthG.branchIdx].forEach(bi=>{
+    const hs = STEMS.indexOf(HIDDEN_MAIN_STEM[bi]);
+    elemCount[stemElementIndex(hs)]++;
+  });
+
+  // --- マヤ暦 ---
+  const maya = calcMaya(y,m,d);
+
+  // ============ 描画 ============
+  document.getElementById("outName").textContent = name;
+  document.getElementById("outMeta").textContent =
+    `${y}年${m}月${d}日 ${timeUnknown ? "(出生時刻不明)" : (String(hh).padStart(2,"0")+":"+String(mm).padStart(2,"0"))} 生まれ / 出生地: ${pref.name}`;
+
+  document.getElementById("sunSignVal").textContent = sunSign;
+  document.getElementById("sunDegVal").textContent = `${sunSign}${sunDeg.wholeDeg}度${sunDeg.minute}分`;
+  document.getElementById("moonSignVal").textContent = moonSign;
+  document.getElementById("moonDegVal").textContent = `${moonSign}${moonDeg.wholeDeg}度${moonDeg.minute}分`;
+  document.getElementById("ascSignVal").textContent = ascSign || "—";
+  document.getElementById("ascDegVal").textContent = ascSign ? `${ascSign}${ascDeg.wholeDeg}度${ascDeg.minute}分` : "算出には出生時刻が必要です";
+
+  let sunHouseText = "", moonHouseText = "";
+  if(ascLon!==null){
+    const ascSignIdx = zodiacIndexFromLongitude(ascLon);
+    const sunHouse = ((zodiacIndexFromLongitude(sunLon) - ascSignIdx +12)%12)+1;
+    const moonHouse = ((zodiacIndexFromLongitude(moonLon) - ascSignIdx +12)%12)+1;
+    sunHouseText = `第${sunHouse}ハウス`;
+    moonHouseText = `第${moonHouse}ハウス`;
+    document.getElementById("wheelCaption").textContent = "ホロスコープ略図(ASCを左(9時方向)に据えたホールサイン・ハウス方式)";
+  } else {
+    document.getElementById("wheelCaption").textContent = "ホロスコープ略図(出生時刻不明のためハウス・ASCなしの簡易表示)";
+  }
+  document.getElementById("sunHouseVal").textContent = sunHouseText;
+  document.getElementById("moonHouseVal").textContent = moonHouseText;
+
+  document.getElementById("sunSignName2").textContent = sunSign;
+  document.getElementById("sunText").textContent = SUN_TEXT[sunSign] + (ascLon!==null ? `(第${((zodiacIndexFromLongitude(sunLon)-zodiacIndexFromLongitude(ascLon)+12)%12)+1}ハウス=${HOUSE_MEANINGS[((zodiacIndexFromLongitude(sunLon)-zodiacIndexFromLongitude(ascLon)+12)%12)]}の領域で、その資質が特に発揮されやすい配置です。)` : "");
+
+  document.getElementById("moonSignName2").textContent = moonSign;
+  document.getElementById("moonText").textContent = MOON_TEXT[moonSign] + (ascLon!==null ? `(第${((zodiacIndexFromLongitude(moonLon)-zodiacIndexFromLongitude(ascLon)+12)%12)+1}ハウス=${HOUSE_MEANINGS[((zodiacIndexFromLongitude(moonLon)-zodiacIndexFromLongitude(ascLon)+12)%12)]}の領域で、感情が動きやすい配置です。)` : "");
+  const moonNote = document.getElementById("moonApproxNote");
+  if(timeUnknown){ moonNote.style.display="block"; moonNote.textContent="出生時刻が不明のため、正午(現地時間)と仮定した概算値です。月は1日で平均約13度移動するため、実際の出生時刻によっては星座が異なる可能性があります。"; }
+  else { moonNote.style.display="none"; }
+
+  const ascBlock = document.getElementById("ascBlock");
+  const ascUnknownNote = document.getElementById("ascUnknownNote");
+  if(timeUnknown){ ascBlock.style.display="none"; ascUnknownNote.style.display="block"; }
+  else { ascBlock.style.display="block"; ascUnknownNote.style.display="none"; document.getElementById("ascSignName2").textContent=ascSign; document.getElementById("ascText").textContent=ASC_TEXT[ascSign]; }
+
+  document.getElementById("aspectText").textContent = aspect ? `${aspect.text}(実測角度差:約${aspect.exactDiff.toFixed(1)}度・${aspect.name})` : "太陽と月の間には主要なアスペクト(0/60/90/120/180度、許容度数内)が見られず、それぞれの資質が状況に応じて独立して働く、切り替え上手な資質を示しています。";
+
+  const planetsUnavail = (mercurySign===null || venusSign===null || marsSign===null);
+  document.getElementById("planetsUnavailNote").style.display = planetsUnavail ? "block" : "none";
+  ["mercuryBlock","venusBlock","marsBlock"].forEach(id=>{ document.getElementById(id).style.display = planetsUnavail ? "none" : "block"; });
+  document.getElementById("mercurySignVal").textContent = mercurySign || "—";
+  document.getElementById("venusSignVal").textContent = venusSign || "—";
+  document.getElementById("marsSignVal").textContent = marsSign || "—";
+  if(!planetsUnavail){
+    document.getElementById("mercurySignName2").textContent = mercurySign;
+    document.getElementById("mercuryText").textContent = MERCURY_TEXT[mercurySign];
+    document.getElementById("venusSignName2").textContent = venusSign;
+    document.getElementById("venusText").textContent = VENUS_TEXT[venusSign];
+    document.getElementById("marsSignName2").textContent = marsSign;
+    document.getElementById("marsText").textContent = MARS_TEXT[marsSign];
+  }
+  document.getElementById("moonPhaseVal").textContent = moonPhaseName;
+  document.getElementById("moonPhaseName2").textContent = moonPhaseName;
+  document.getElementById("moonPhaseText").textContent = MOON_PHASE_TEXT[moonPhaseName];
+
+  document.getElementById("yearGanshi").textContent = yearG.kanshi;
+  document.getElementById("monthGanshi").textContent = monthG.kanshi;
+  document.getElementById("dayGanshi").textContent = dayG.kanshi;
+
+  document.getElementById("jusseiVal").textContent = jussei;
+  document.getElementById("jusseiName2").textContent = jussei;
+  document.getElementById("jusseiText").innerHTML = `<span class="mini-lead">${JUSSEI_ONELINE[jussei]}</span><br>${JUSSEI_TEXT[jussei]}`;
+
+  document.getElementById("stageVal").textContent = stage;
+  document.getElementById("stageName2").textContent = stage;
+  document.getElementById("stageText").innerHTML = `<span class="mini-lead">${STAGE_ONELINE[stage]}</span><br>${STAGE_TEXT[stage]}`;
+
+  const elBarsHolder = document.getElementById("elementBars");
+  elBarsHolder.innerHTML = "";
+  const maxCount = Math.max(...elemCount, 1);
+  ELEMENT_NAMES.forEach((nm,i)=>{
+    const row = document.createElement("div"); row.className="element-row";
+    row.innerHTML = `<div class="el-label">${nm}</div><div class="el-track"><div class="el-fill" style="width:${(elemCount[i]/6*100).toFixed(0)}%;background:${ELEMENT_COLORS[i]};"></div></div><div class="el-count">${elemCount[i]}</div>`;
+    elBarsHolder.appendChild(row);
+  });
+  const maxIdx = elemCount.indexOf(Math.max(...elemCount));
+  const zeroIdxs = elemCount.map((c,i)=>c===0?i:null).filter(v=>v!==null);
+  let elemSentence = `年・月・日の干支(本気)6要素のうち、「${ELEMENT_NAMES[maxIdx]}」が最も多く(${elemCount[maxIdx]}/6)を占めています。${ELEMENT_TRAIT[ELEMENT_NAMES[maxIdx]].many}`;
+  if(zeroIdxs.length>0){ elemSentence += ` 一方、「${zeroIdxs.map(i=>ELEMENT_NAMES[i]).join("・")}」の要素は見られません。${ELEMENT_TRAIT[ELEMENT_NAMES[zeroIdxs[0]]].few}`; }
+  else { elemSentence += " 五行は比較的バランス良く分布していて、状況に応じていろいろな面を発揮できるタイプと言えそうです。"; }
+  document.getElementById("elementText").textContent = elemSentence;
+
+  document.getElementById("sanmeiMethodNote").textContent =
+    `年柱は立春(黄経315度、この年は概算で${yearG.lichun.getUTCFullYear()}/${String(yearG.lichun.getUTCMonth()+1).padStart(2,"0")}/${String(yearG.lichun.getUTCDate()).padStart(2,"0")}頃UTC)を境に切り替える方式、月柱は太陽黄経(節入り)による節月方式、月干は五虎遁の訣に基づいて算出しています。十大主星は日干と月支の本気(蔵干)の五行・陰陽関係、十二大従星は日干と年支の関係(長生十二運)から、いずれも四柱推命・算命学で広く用いられる標準的な算出法に基づいています。`;
+
+  document.getElementById("longCountVal").textContent = `${maya.longCount.baktun}.${maya.longCount.katun}.${maya.longCount.tun}.${maya.longCount.uinal}.${maya.longCount.kin}`;
+  document.getElementById("longCountSub").textContent = "マヤ長期暦(バクトゥン.カトゥン.トゥン.ウィナル.キン)";
+  document.getElementById("tzolkinVal").textContent = `${maya.number} ${maya.sign}`;
+  document.getElementById("haabVal").textContent = maya.haabMonth>=0 ? `${maya.haabDay} ${HAAB_MONTHS[maya.haabMonth]}` : `${maya.haabDay} ワイエブ(無名日)`;
+
+  document.getElementById("mayaName2").textContent = maya.sign;
+  document.getElementById("mayaKinTag").textContent = `キン${maya.number}`;
+  document.getElementById("mayaText").innerHTML = `<span class="mini-lead">${MAYA_ONELINE[maya.sign]}</span><br>${MAYA_SIGN_TEXT[maya.sign]}`;
+  document.getElementById("toneName2").textContent = `音${maya.number}`;
+  document.getElementById("toneText").innerHTML = `<span class="mini-lead">${TONE_ONELINE[maya.number]}</span><br>${TONE_TEXT[maya.number]}`;
+
+  // --- 総合鑑定(やさしい言葉でまとめる) ---
+  const aspectSimple = aspect ? ASPECT_SIMPLE[aspect.name] : ASPECT_NONE_SIMPLE;
+  const lead = `ひとことで言うと、<strong>${SUN_SIMPLE[sunSign]}</strong>で、内側は<strong>${MOON_SIMPLE[moonSign]}</strong>なタイプ。`;
+  const bodyParts = [];
+  bodyParts.push(`星占いでは、${SUN_KEYWORD[sunSign]}が持ち味です。心の中は${MOON_KEYWORD[moonSign]}なので、${ascSign ? `人からは${ASC_KEYWORD[ascSign]}に見られやすいでしょう。` : ""}考えと気持ちの相性は、${aspectSimple}です。`);
+  bodyParts.push(`算命学では、${JUSSEI_KEYWORD[jussei]}が生まれ持った性格。今は${STAGE_KEYWORD[stage]}の時期です。${elemSentence}`);
+  bodyParts.push(`マヤ暦では、${MAYA_KEYWORD[maya.sign]}を持つ紋章と、${TONE_KEYWORD[maya.number]}という音の組み合わせです。`);
+
+  // 3層構造で人物像をまとめる+組み合わせ数のトリビアを添える(占いごとの「一致判定」はしない)
+  const twist = `占いごとの結果を重ねてみると、あなたには少なくとも3つの顔があるようです。周りから見える表の顔は「${SUN_KEYWORD[sunSign]}」、ひとりのときの本音は「${MOON_KEYWORD[moonSign]}」。算命学が示す生まれ持った気質は「${JUSSEI_KEYWORD[jussei]}」で、今めぐっている運気は「${STAGE_KEYWORD[stage]}」の時期。さらにマヤ暦の紋章としては「${MAYA_KEYWORD[maya.sign]}」も持っています。ひとりの中にこれだけの顔が同居しているのが、占いから見えてくるあなたの奥行きです。`;
+  document.getElementById("synthesisBox").innerHTML = `<p class="lead">${lead}</p>` + bodyParts.map(p=>`<p>${p}</p>`).join("") + `<div class="twist"><p>${twist}</p></div>`;
+
+  renderWheel(sunLon, moonLon, ascLon, aspect, mercuryLon, venusLon, marsLon);
+
+  document.getElementById("inputPanel").style.display = "none";
+  document.getElementById("report").style.display = "block";
+  document.getElementById("actionRow").style.display = "flex";
+  window.scrollTo({top:0, behavior:"smooth"});
+});
+
+document.getElementById("printBtn").addEventListener("click", ()=>{ window.print(); });
+document.getElementById("editBtn").addEventListener("click", ()=>{
+  document.getElementById("inputPanel").style.display = "block";
+  document.getElementById("report").style.display = "none";
+  document.getElementById("actionRow").style.display = "none";
+  window.scrollTo({top:0, behavior:"smooth"});
+});
+
+})();
+</script>
+</body>
+</html>
